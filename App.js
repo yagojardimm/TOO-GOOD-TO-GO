@@ -5,13 +5,14 @@ import BottomNav from './src/components/BottomNav';
 import ExploreScreen from './src/screens/yago/ExploreScreen';
 import BagDetailsScreen from './src/screens/yago/BagDetailsScreen';
 import CheckoutScreen from './src/screens/yago/CheckoutScreen';
+import OrderSuccessScreen from './src/screens/yago/OrderSuccessScreen';
 import OrdersScreen from './src/screens/caio/OrdersScreen';
 import ProfileScreen from './src/screens/caio/ProfileScreen';
 import PartnerScreen from './src/screens/caio/PartnerScreen';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('explore');
-  const [currentScreen, setCurrentScreen] = useState('main'); // 'main', 'details', 'checkout'
+  const [currentScreen, setCurrentScreen] = useState('main'); // 'main', 'details', 'checkout', 'success'
   const [selectedBag, setSelectedBag] = useState(null);
 
   const renderContent = () => {
@@ -31,8 +32,23 @@ export default function App() {
           bag={selectedBag}
           onBack={() => setCurrentScreen('details')}
           onSuccess={() => {
+            setCurrentScreen('success');
+          }}
+        />
+      );
+    }
+
+    if (currentScreen === 'success') {
+      return (
+        <OrderSuccessScreen
+          bag={selectedBag}
+          onGoToOrders={() => {
             setCurrentScreen('main');
             setCurrentTab('orders');
+          }}
+          onGoHome={() => {
+            setCurrentScreen('main');
+            setCurrentTab('explore');
           }}
         />
       );
@@ -63,13 +79,15 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View style={styles.container}>{renderContent()}</View>
-      <BottomNav
-        activeTab={currentTab}
-        onTabChange={(tab) => {
-          setCurrentScreen('main');
-          setCurrentTab(tab);
-        }}
-      />
+      {currentScreen === 'main' && (
+        <BottomNav
+          activeTab={currentTab}
+          onTabChange={(tab) => {
+            setCurrentScreen('main');
+            setCurrentTab(tab);
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
