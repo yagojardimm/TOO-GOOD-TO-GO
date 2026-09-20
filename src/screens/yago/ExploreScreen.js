@@ -34,13 +34,14 @@ export default function ExploreScreen({ onSelectBag }) {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
+      {/* Cabeçalho Oficial Too Good To Go */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>Olá, Yago 👋</Text>
+          <Text style={styles.appBrand}>SaveFood</Text>
           <View style={styles.locationRow}>
-            <Feather name="map-pin" size={13} color="#059669" />
-            <Text style={styles.locationText}>São Paulo, SP</Text>
+            <Feather name="map-pin" size={13} color="#006654" />
+            <Text style={styles.locationText}>São Paulo • até 5 km</Text>
+            <Feather name="chevron-down" size={13} color="#64748b" style={{ marginLeft: 2 }} />
           </View>
         </View>
 
@@ -53,7 +54,7 @@ export default function ExploreScreen({ onSelectBag }) {
           >
             <Feather
               name="list"
-              size={15}
+              size={16}
               color={viewMode === 'list' ? '#ffffff' : '#64748b'}
             />
           </TouchableOpacity>
@@ -64,7 +65,7 @@ export default function ExploreScreen({ onSelectBag }) {
           >
             <Feather
               name="map"
-              size={15}
+              size={16}
               color={viewMode === 'map' ? '#ffffff' : '#64748b'}
             />
           </TouchableOpacity>
@@ -135,7 +136,7 @@ export default function ExploreScreen({ onSelectBag }) {
               <View style={styles.userPinPulse} />
               <Feather name="navigation" size={16} color="#ffffff" />
             </View>
-            <Text style={styles.userPinLabel}>Você</Text>
+            <Text style={styles.userPinLabel}>Você está aqui</Text>
 
             {/* Pins dos Estabelecimentos */}
             {filteredBags.map((bag, idx) => {
@@ -176,7 +177,7 @@ export default function ExploreScreen({ onSelectBag }) {
                 <View style={{ flex: 1 }}>
                   <Text style={styles.mapCardStore}>{selectedMapStore.storeName}</Text>
                   <Text style={styles.mapCardDistance}>
-                    {selectedMapStore.distance} • {selectedMapStore.pickupWindow}
+                    {selectedMapStore.distance} • Retirada: {selectedMapStore.pickupWindow}
                   </Text>
                 </View>
                 <View style={styles.mapCardPriceBlock}>
@@ -189,7 +190,7 @@ export default function ExploreScreen({ onSelectBag }) {
                 onPress={() => onSelectBag && onSelectBag(selectedMapStore)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.mapCardActionText}>Ver Detalhes da Sacola</Text>
+                <Text style={styles.mapCardActionText}>Ver Sacola Surpresa</Text>
                 <Feather name="arrow-right" size={16} color="#ffffff" />
               </TouchableOpacity>
             </View>
@@ -197,32 +198,53 @@ export default function ExploreScreen({ onSelectBag }) {
         </View>
       ) : (
         /* Visualização em Lista */
-        filteredBags.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Feather name="inbox" size={48} color="#cbd5e1" />
-            <Text style={styles.emptyTitle}>Nenhuma sacola encontrada</Text>
-            <Text style={styles.emptySubtitle}>Tente buscar por outro termo ou limpar os filtros de categoria.</Text>
-            <TouchableOpacity
-              style={styles.resetButton}
-              onPress={() => {
-                setSearchQuery('');
-                setSelectedCategory('all');
-              }}
-            >
-              <Text style={styles.resetButtonText}>Limpar Filtros</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredBags}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <BagCard bag={item} onPress={onSelectBag} />
-            )}
-          />
-        )
+        <FlatList
+          data={filteredBags}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View>
+              {/* Banner Oficial Too Good To Go */}
+              <View style={styles.promoBanner}>
+                <View style={styles.promoIconBox}>
+                  <Feather name="globe" size={22} color="#006654" />
+                </View>
+                <View style={styles.promoTextBox}>
+                  <Text style={styles.promoTitle}>Combata o Desperdício 🌱</Text>
+                  <Text style={styles.promoDesc}>
+                    Resgate alimentos frescos de alta qualidade com até 70% de desconto perto de você!
+                  </Text>
+                </View>
+              </View>
+
+              {/* Título da Seção */}
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle}>Sacolas Disponíveis Hoje</Text>
+                <Text style={styles.sectionCount}>{filteredBags.length} opções</Text>
+              </View>
+            </View>
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Feather name="inbox" size={48} color="#cbd5e1" />
+              <Text style={styles.emptyTitle}>Nenhuma sacola encontrada</Text>
+              <Text style={styles.emptySubtitle}>Tente buscar por outro termo ou limpar os filtros de categoria.</Text>
+              <TouchableOpacity
+                style={styles.resetButton}
+                onPress={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                }}
+              >
+                <Text style={styles.resetButtonText}>Limpar Filtros</Text>
+              </TouchableOpacity>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <BagCard bag={item} onPress={onSelectBag} />
+          )}
+        />
       )}
     </View>
   );
@@ -245,21 +267,22 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
   },
-  greeting: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0f172a',
+  appBrand: {
+    fontSize: 21,
+    fontWeight: '900',
+    color: '#006654',
+    letterSpacing: -0.5,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 3,
+    marginTop: 2,
   },
   locationText: {
     fontSize: 13,
     color: '#64748b',
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   viewToggleContainer: {
     flexDirection: 'row',
@@ -273,11 +296,11 @@ const styles = StyleSheet.create({
     borderRadius: 9,
   },
   toggleBtnActive: {
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     elevation: 2,
-    shadowColor: '#059669',
+    shadowColor: '#006654',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 3,
   },
   searchSection: {
@@ -324,8 +347,8 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
   },
   categoryChipActive: {
-    backgroundColor: '#059669',
-    borderColor: '#059669',
+    backgroundColor: '#006654',
+    borderColor: '#006654',
   },
   catIcon: {
     marginRight: 6,
@@ -341,6 +364,55 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 16,
     paddingBottom: 24,
+  },
+  promoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ebf5f2',
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ccebe4',
+  },
+  promoIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#d8f0ea',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  promoTextBox: {
+    flex: 1,
+  },
+  promoTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#004d3f',
+  },
+  promoDesc: {
+    fontSize: 12,
+    color: '#006654',
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  sectionCount: {
+    fontSize: 12,
+    color: '#64748b',
+    fontWeight: '600',
   },
   /* Estilos do Mapa */
   mapContainer: {
@@ -361,7 +433,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 1,
-    borderColor: 'rgba(5, 150, 105, 0.25)',
+    borderColor: 'rgba(0, 102, 84, 0.25)',
   },
   radarCircle2: {
     position: 'absolute',
@@ -369,7 +441,7 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 120,
     borderWidth: 1,
-    borderColor: 'rgba(5, 150, 105, 0.18)',
+    borderColor: 'rgba(0, 102, 84, 0.18)',
   },
   radarCircle3: {
     position: 'absolute',
@@ -377,17 +449,17 @@ const styles = StyleSheet.create({
     height: 360,
     borderRadius: 180,
     borderWidth: 1,
-    borderColor: 'rgba(5, 150, 105, 0.10)',
+    borderColor: 'rgba(0, 102, 84, 0.10)',
   },
   userPin: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#0284c7',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
-    shadowColor: '#2563eb',
+    shadowColor: '#0284c7',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
@@ -397,12 +469,12 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+    backgroundColor: 'rgba(2, 132, 199, 0.2)',
   },
   userPinLabel: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#1e3a8a',
+    color: '#0369a1',
     marginTop: 4,
   },
   storePin: {
@@ -412,7 +484,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#059669',
+    borderColor: '#006654',
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -420,14 +492,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   storePinActive: {
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     borderColor: '#ffffff',
     transform: [{ scale: 1.15 }],
   },
   storePinPrice: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#059669',
+    color: '#006654',
   },
   storePinPriceActive: {
     color: '#ffffff',
@@ -468,18 +540,18 @@ const styles = StyleSheet.create({
   mapCardPrice: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#059669',
+    color: '#006654',
   },
   mapCardDiscount: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#dc2626',
+    color: '#b91c1c',
   },
   mapCardAction: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     paddingVertical: 11,
     borderRadius: 12,
     gap: 6,
@@ -510,7 +582,7 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     marginTop: 18,
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 10,

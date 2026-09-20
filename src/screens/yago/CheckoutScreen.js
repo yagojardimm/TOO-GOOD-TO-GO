@@ -70,19 +70,19 @@ export default function CheckoutScreen({ bag, onBack, onSuccess }) {
           <Text style={styles.cardTitle}>Dados de Retirada</Text>
           <View style={styles.infoRow}>
             <View style={styles.infoIconBox}>
-              <Feather name="clock" size={17} color="#059669" />
+              <Feather name="clock" size={17} color="#006654" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.infoLabel}>Horário para resgate</Text>
+              <Text style={styles.infoLabel}>Horário para resgate hoje</Text>
               <Text style={styles.infoValue}>{bag.pickupWindow}</Text>
             </View>
           </View>
           <View style={[styles.infoRow, { marginTop: 12 }]}>
             <View style={styles.infoIconBox}>
-              <Feather name="map-pin" size={17} color="#059669" />
+              <Feather name="map-pin" size={17} color="#006654" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.infoLabel}>Endereço da loja</Text>
+              <Text style={styles.infoLabel}>Endereço do estabelecimento</Text>
               <Text style={styles.infoValue}>{bag.address}</Text>
             </View>
           </View>
@@ -91,12 +91,12 @@ export default function CheckoutScreen({ bag, onBack, onSuccess }) {
         {/* Card de Impacto Sustentável */}
         <View style={styles.impactCard}>
           <View style={styles.impactIconCircle}>
-            <Feather name="globe" size={22} color="#059669" />
+            <Feather name="globe" size={22} color="#006654" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.impactTitle}>Impacto Positivo</Text>
+            <Text style={styles.impactTitle}>Impacto Ecológico Direto</Text>
             <Text style={styles.impactDesc}>
-              Com este resgate, você evita o desperdício de {quantity} refeição e poupa aproximadamente {(2.5 * quantity).toFixed(1)} kg de CO₂e no planeta!
+              Ao resgatar este excedente, você evita o desperdício de {quantity} refeição e poupa {(2.5 * quantity).toFixed(1)} kg de CO₂e no planeta!
             </Text>
           </View>
         </View>
@@ -116,15 +116,15 @@ export default function CheckoutScreen({ bag, onBack, onSuccess }) {
                 {paymentMethod === 'pix' && <View style={styles.radioInner} />}
               </View>
               <View style={styles.paymentIconBox}>
-                <Feather name="zap" size={18} color="#059669" />
+                <Feather name="zap" size={18} color="#006654" />
               </View>
               <View>
                 <Text style={styles.paymentName}>Pix Instantâneo</Text>
-                <Text style={styles.paymentSub}>Aprovação imediata e reserva garantida</Text>
+                <Text style={styles.paymentSub}>Aprovação imediata e voucher garantido</Text>
               </View>
             </View>
             <View style={styles.recommendedBadge}>
-              <Text style={styles.recommendedText}>Rápido</Text>
+              <Text style={styles.recommendedText}>Recomendado</Text>
             </View>
           </TouchableOpacity>
 
@@ -139,7 +139,7 @@ export default function CheckoutScreen({ bag, onBack, onSuccess }) {
                 {paymentMethod === 'card' && <View style={styles.radioInner} />}
               </View>
               <View style={styles.paymentIconBox}>
-                <Feather name="credit-card" size={18} color="#3b82f6" />
+                <Feather name="credit-card" size={18} color="#2563eb" />
               </View>
               <View>
                 <Text style={styles.paymentName}>Cartão de Crédito</Text>
@@ -153,11 +153,11 @@ export default function CheckoutScreen({ bag, onBack, onSuccess }) {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Resumo dos Valores</Text>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Valor original ({quantity}x)</Text>
+            <Text style={styles.summaryLabel}>Valor original estimado ({quantity}x)</Text>
             <Text style={styles.summaryValueStriked}>R$ {originalTotal.toFixed(2).replace('.', ',')}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Desconto SaveFood ({bag.discountPercentage}%)</Text>
+            <Text style={styles.summaryLabel}>Desconto aplicado ({bag.discountPercentage}%)</Text>
             <Text style={styles.summaryDiscount}>- R$ {savedAmount.toFixed(2).replace('.', ',')}</Text>
           </View>
           <View style={styles.summaryRow}>
@@ -175,7 +175,7 @@ export default function CheckoutScreen({ bag, onBack, onSuccess }) {
       {/* Barra de Ação Inferior */}
       <View style={styles.bottomBar}>
         <View>
-          <Text style={styles.bottomTotalLabel}>Total ({quantity} item)</Text>
+          <Text style={styles.bottomTotalLabel}>Total ({quantity} sacola)</Text>
           <Text style={styles.bottomTotalValue}>R$ {finalTotal.toFixed(2).replace('.', ',')}</Text>
         </View>
         <TouchableOpacity
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#ebf5f2',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -331,18 +331,18 @@ const styles = StyleSheet.create({
   impactCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#ebf5f2',
     borderRadius: 16,
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#a7f3d0',
+    borderColor: '#ccebe4',
   },
   impactIconCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#d1fae5',
+    backgroundColor: '#d8f0ea',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -350,11 +350,11 @@ const styles = StyleSheet.create({
   impactTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#065f46',
+    color: '#004d3f',
   },
   impactDesc: {
     fontSize: 12,
-    color: '#047857',
+    color: '#006654',
     marginTop: 3,
     lineHeight: 17,
   },
@@ -369,8 +369,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   paymentOptionActive: {
-    borderColor: '#059669',
-    backgroundColor: '#f0fdf4',
+    borderColor: '#006654',
+    backgroundColor: '#f4faf8',
   },
   paymentLeft: {
     flexDirection: 'row',
@@ -388,13 +388,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   radioCircleActive: {
-    borderColor: '#059669',
+    borderColor: '#006654',
   },
   radioInner: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
   },
   paymentIconBox: {
     marginRight: 10,
@@ -410,15 +410,15 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   recommendedBadge: {
-    backgroundColor: '#dcfce7',
+    backgroundColor: '#d8f0ea',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   recommendedText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#15803d',
+    fontWeight: '800',
+    color: '#004d3f',
   },
   summaryRow: {
     flexDirection: 'row',
@@ -437,12 +437,12 @@ const styles = StyleSheet.create({
   summaryDiscount: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#dc2626',
+    color: '#b91c1c',
   },
   summaryFree: {
     fontSize: 13,
-    fontWeight: '700',
-    color: '#059669',
+    fontWeight: '800',
+    color: '#006654',
   },
   divider: {
     height: 1,
@@ -461,8 +461,8 @@ const styles = StyleSheet.create({
   },
   totalValue: {
     fontSize: 20,
-    fontWeight: '800',
-    color: '#059669',
+    fontWeight: '900',
+    color: '#006654',
   },
   bottomBar: {
     position: 'absolute',
@@ -491,11 +491,11 @@ const styles = StyleSheet.create({
   },
   bottomTotalValue: {
     fontSize: 20,
-    fontWeight: '800',
-    color: '#059669',
+    fontWeight: '900',
+    color: '#006654',
   },
   confirmButton: {
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 22,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     gap: 8,
     elevation: 3,
-    shadowColor: '#059669',
+    shadowColor: '#006654',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
@@ -511,6 +511,6 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     color: '#ffffff',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });

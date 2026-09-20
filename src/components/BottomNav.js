@@ -24,7 +24,7 @@ export default function BottomNav({ activeTab, onTabChange }) {
             <Feather
               name={tab.icon}
               size={22}
-              color={isActive ? '#059669' : '#9ca3af'}
+              color={isActive ? '#006654' : '#94a3b8'}
             />
             <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
               {tab.label}
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: '#f1f5f9',
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 11,
     marginTop: 4,
-    color: '#9ca3af',
+    color: '#94a3b8',
     fontWeight: '500',
   },
   activeTabLabel: {
-    color: '#059669',
-    fontWeight: '700',
+    color: '#006654',
+    fontWeight: '800',
   },
 });

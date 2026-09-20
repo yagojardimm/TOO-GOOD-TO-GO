@@ -39,7 +39,7 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
                 <Feather
                   name="heart"
                   size={20}
-                  color={isFavorite ? '#dc2626' : '#0f172a'}
+                  color={isFavorite ? '#b91c1c' : '#0f172a'}
                 />
               </TouchableOpacity>
             </View>
@@ -67,7 +67,7 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
               <Text style={styles.storeCategory}>{bag.categoryLabel}</Text>
             </View>
             <View style={styles.ratingBadge}>
-              <Feather name="star" size={14} color="#f59e0b" />
+              <Feather name="star" size={14} color="#b45309" />
               <Text style={styles.ratingText}>{bag.rating}</Text>
               <Text style={styles.reviewsText}>({bag.reviewsCount})</Text>
             </View>
@@ -79,10 +79,10 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
           {/* Card de Horário de Retirada */}
           <View style={styles.pickupCard}>
             <View style={styles.pickupIconBox}>
-              <Feather name="clock" size={20} color="#059669" />
+              <Feather name="clock" size={20} color="#006654" />
             </View>
             <View style={styles.pickupTextBox}>
-              <Text style={styles.pickupLabel}>Janela de Retirada</Text>
+              <Text style={styles.pickupLabel}>Janela de Retirada Hoje</Text>
               <Text style={styles.pickupValue}>{bag.pickupWindow}</Text>
             </View>
           </View>
@@ -90,12 +90,12 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
           {/* Seção: O que pode vir na sacola? */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Feather name="gift" size={18} color="#059669" />
+              <Feather name="gift" size={18} color="#006654" />
               <Text style={styles.sectionTitle}>O que pode vir na sacola?</Text>
             </View>
             <Text style={styles.descriptionText}>{bag.bagDescription}</Text>
             <View style={styles.surpriseTip}>
-              <Feather name="info" size={14} color="#0284c7" />
+              <Feather name="info" size={15} color="#006654" />
               <Text style={styles.surpriseTipText}>
                 O conteúdo exato depende do excedente fresco do dia. É uma surpresa deliciosa e sustentável!
               </Text>
@@ -105,7 +105,7 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
           {/* Seção: Localização */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Feather name="map-pin" size={18} color="#059669" />
+              <Feather name="map-pin" size={18} color="#006654" />
               <Text style={styles.sectionTitle}>Onde retirar</Text>
             </View>
             <Text style={styles.addressText}>{bag.address}</Text>
@@ -115,7 +115,7 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
           {/* Seção: Regras de Retirada */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Feather name="check-circle" size={18} color="#059669" />
+              <Feather name="check-circle" size={18} color="#006654" />
               <Text style={styles.sectionTitle}>Como funciona o resgate</Text>
             </View>
             {bag.pickupRules &&
@@ -134,7 +134,7 @@ export default function BagDetailsScreen({ bag, onBack, onProceedToCheckout }) {
         <View style={styles.priceContainer}>
           <Text style={styles.priceLabel}>Valor a pagar</Text>
           <View style={styles.priceNumbers}>
-            <Text style={styles.originalPrice}>R$ {bag.originalPrice.toFixed(2).replace('.', ',')}</Text>
+            <Text style={styles.originalPrice}>De R$ {bag.originalPrice.toFixed(2).replace('.', ',')}</Text>
             <Text style={styles.finalPrice}>R$ {bag.price.toFixed(2).replace('.', ',')}</Text>
           </View>
         </View>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     paddingBottom: 110,
   },
   imageHeader: {
-    height: 250,
+    height: 260,
     width: '100%',
     position: 'relative',
     backgroundColor: '#cbd5e1',
@@ -179,13 +179,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   discountBadge: {
-    backgroundColor: '#dc2626',
+    backgroundColor: '#b91c1c',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   remainingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    backgroundColor: 'rgba(15, 23, 42, 0.82)',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   remainingText: {
     color: '#ffffff',
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   contentBody: {
     padding: 20,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#b45309',
+    color: '#92400e',
     marginLeft: 3,
   },
   reviewsText: {
@@ -283,18 +283,18 @@ const styles = StyleSheet.create({
   pickupCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#ebf5f2',
     borderWidth: 1,
-    borderColor: '#a7f3d0',
-    borderRadius: 14,
+    borderColor: '#ccebe4',
+    borderRadius: 16,
     padding: 14,
     marginBottom: 20,
   },
   pickupIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#d1fae5',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#d8f0ea',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -304,13 +304,13 @@ const styles = StyleSheet.create({
   },
   pickupLabel: {
     fontSize: 12,
-    color: '#047857',
+    color: '#004d3f',
     fontWeight: '600',
   },
   pickupValue: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#065f46',
+    color: '#006654',
     marginTop: 2,
   },
   section: {
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#0f172a',
     marginLeft: 8,
   },
@@ -338,17 +338,18 @@ const styles = StyleSheet.create({
   surpriseTip: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#f0f9ff',
+    backgroundColor: '#ebf5f2',
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     marginTop: 10,
     gap: 8,
   },
   surpriseTipText: {
     flex: 1,
     fontSize: 12,
-    color: '#0369a1',
+    color: '#004d3f',
     lineHeight: 18,
+    fontWeight: '500',
   },
   addressText: {
     fontSize: 14,
@@ -357,8 +358,8 @@ const styles = StyleSheet.create({
   },
   distanceBadge: {
     fontSize: 12,
-    color: '#059669',
-    fontWeight: '600',
+    color: '#006654',
+    fontWeight: '700',
     marginTop: 4,
   },
   ruleItem: {
@@ -371,7 +372,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     marginTop: 7,
   },
   ruleText: {
@@ -421,19 +422,19 @@ const styles = StyleSheet.create({
   },
   finalPrice: {
     fontSize: 22,
-    fontWeight: '800',
-    color: '#059669',
+    fontWeight: '900',
+    color: '#006654',
   },
   reserveButton: {
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 22,
     paddingVertical: 14,
     borderRadius: 14,
     gap: 8,
     elevation: 3,
-    shadowColor: '#059669',
+    shadowColor: '#006654',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
@@ -441,6 +442,6 @@ const styles = StyleSheet.create({
   reserveButtonText: {
     color: '#ffffff',
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });

@@ -12,7 +12,7 @@ export default function BagCard({ bag, onPress }) {
       <View style={styles.imageContainer}>
         <Image source={{ uri: bag.coverImage }} style={styles.coverImage} resizeMode="cover" />
         
-        {/* Badge de Desconto */}
+        {/* Badge de Desconto Oficial */}
         <View style={styles.discountBadge}>
           <Text style={styles.discountText}>-{bag.discountPercentage}%</Text>
         </View>
@@ -20,7 +20,7 @@ export default function BagCard({ bag, onPress }) {
         {/* Quantidade Restante */}
         <View style={styles.remainingBadge}>
           <Feather name="zap" size={12} color="#ffffff" style={styles.zapIcon} />
-          <Text style={styles.remainingText}>Resta {bag.remainingItems}</Text>
+          <Text style={styles.remainingText}>Apenas {bag.remainingItems} restantes</Text>
         </View>
       </View>
 
@@ -31,33 +31,33 @@ export default function BagCard({ bag, onPress }) {
           <View style={styles.storeInfo}>
             <Text style={styles.storeName} numberOfLines={1}>{bag.storeName}</Text>
             <Text style={styles.categoryDistance}>
-              {bag.categoryLabel} • {bag.distance}
+              {bag.categoryLabel} • a {bag.distance}
             </Text>
           </View>
           <View style={styles.ratingBadge}>
-            <Feather name="star" size={12} color="#f59e0b" />
+            <Feather name="star" size={12} color="#b45309" />
             <Text style={styles.ratingText}>{bag.rating}</Text>
           </View>
         </View>
 
-        {/* Título da Sacola */}
+        {/* Título da Sacola Surpresa */}
         <Text style={styles.bagTitle} numberOfLines={1}>{bag.bagTitle}</Text>
 
-        {/* Horário de Retirada */}
-        <View style={styles.pickupRow}>
-          <Feather name="clock" size={13} color="#059669" />
-          <Text style={styles.pickupText}>{bag.pickupWindow}</Text>
+        {/* Janela de Retirada Oficial Too Good To Go */}
+        <View style={styles.pickupBox}>
+          <Feather name="clock" size={13} color="#006654" />
+          <Text style={styles.pickupText}>Retirada: {bag.pickupWindow}</Text>
         </View>
 
         {/* Linha de Preço */}
         <View style={styles.footerRow}>
           <View style={styles.priceContainer}>
-            <Text style={styles.originalPrice}>R$ {bag.originalPrice.toFixed(2).replace('.', ',')}</Text>
-            <Text style={styles.price}>R$ {bag.price.toFixed(2).replace('.', ',')}</Text>
+            <Text style={styles.originalPrice}>De R$ {bag.originalPrice.toFixed(2).replace('.', ',')}</Text>
+            <Text style={styles.price}>Por R$ {bag.price.toFixed(2).replace('.', ',')}</Text>
           </View>
           <View style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>Ver Sacola</Text>
-            <Feather name="chevron-right" size={15} color="#059669" />
+            <Text style={styles.actionButtonText}>Reservar</Text>
+            <Feather name="chevron-right" size={15} color="#006654" />
           </View>
         </View>
       </View>
@@ -68,19 +68,19 @@ export default function BagCard({ bag, onPress }) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 18,
-    marginBottom: 16,
+    borderRadius: 20,
+    marginBottom: 18,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: '#e2e8f0',
     elevation: 3,
     shadowColor: '#0f172a',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
   },
   imageContainer: {
-    height: 150,
+    height: 160,
     width: '100%',
     position: 'relative',
     backgroundColor: '#e2e8f0',
@@ -93,23 +93,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     left: 12,
-    backgroundColor: '#dc2626',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: '#b91c1c',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 8,
   },
   discountText: {
     color: '#ffffff',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   remainingBadge: {
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
@@ -120,20 +120,20 @@ const styles = StyleSheet.create({
   remainingText: {
     color: '#ffffff',
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   body: {
-    padding: 14,
+    padding: 16,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginRight: 10,
     backgroundColor: '#f1f5f9',
   },
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   storeName: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#0f172a',
   },
   categoryDistance: {
@@ -154,32 +154,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fef3c7',
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   ratingText: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#b45309',
+    fontWeight: '800',
+    color: '#92400e',
     marginLeft: 3,
   },
   bagTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 6,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 10,
   },
-  pickupRow: {
+  pickupBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    backgroundColor: '#ebf5f2',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: 14,
+    gap: 6,
   },
   pickupText: {
     fontSize: 12,
-    color: '#059669',
-    fontWeight: '600',
-    marginLeft: 5,
+    color: '#006654',
+    fontWeight: '700',
   },
   footerRow: {
     flexDirection: 'row',
@@ -187,14 +192,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
-    paddingTop: 10,
+    paddingTop: 12,
   },
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
   },
   originalPrice: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#94a3b8',
     textDecorationLine: 'line-through',
     marginRight: 8,
@@ -202,16 +207,20 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#059669',
+    color: '#006654',
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#ebf5f2',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
   actionButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#059669',
+    color: '#006654',
     marginRight: 2,
   },
 });

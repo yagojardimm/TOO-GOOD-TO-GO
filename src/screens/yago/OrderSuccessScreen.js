@@ -17,13 +17,13 @@ export default function OrderSuccessScreen({ bag, onGoToOrders, onGoHome }) {
 
         <Text style={styles.title}>Reserva Confirmada!</Text>
         <Text style={styles.subtitle}>
-          Parabéns! Você salvou mais uma refeição e ajudou a combater o desperdício de alimentos.
+          Parabéns! Você salvou mais uma refeição deliciosa e ajudou a combater o desperdício de comida.
         </Text>
 
         {/* Card com Detalhes do Pedido */}
         <View style={styles.orderCard}>
           <View style={styles.orderHeader}>
-            <Text style={styles.orderNumberLabel}>Código do Pedido</Text>
+            <Text style={styles.orderNumberLabel}>Código do Resgate</Text>
             <View style={styles.codeBadge}>
               <Text style={styles.orderCode}>{orderNumber}</Text>
             </View>
@@ -32,32 +32,32 @@ export default function OrderSuccessScreen({ bag, onGoToOrders, onGoHome }) {
           <View style={styles.divider} />
 
           <View style={styles.infoRow}>
-            <Feather name="shopping-bag" size={16} color="#059669" />
+            <Feather name="shopping-bag" size={16} color="#006654" />
             <Text style={styles.infoStore} numberOfLines={1}>{bag?.storeName || 'Loja Parceira'}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Feather name="clock" size={16} color="#059669" />
+            <Feather name="clock" size={16} color="#006654" />
             <Text style={styles.infoText}>{bag?.pickupWindow || 'Hoje das 18h30 às 20h00'}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Feather name="map-pin" size={16} color="#059669" />
+            <Feather name="map-pin" size={16} color="#006654" />
             <Text style={styles.infoText} numberOfLines={1}>{bag?.address || 'São Paulo, SP'}</Text>
           </View>
 
           {/* Badge de Impacto */}
           <View style={styles.ecoBadge}>
-            <Feather name="heart" size={14} color="#059669" />
-            <Text style={styles.ecoBadgeText}>+1 Refeição salva • -2.5 kg de CO₂e</Text>
+            <Feather name="globe" size={15} color="#006654" />
+            <Text style={styles.ecoBadgeText}>+1 Refeição salva • -2.5 kg de CO₂e evitados</Text>
           </View>
         </View>
 
         {/* Dica de Retirada */}
         <View style={styles.tipBox}>
-          <Feather name="info" size={16} color="#0284c7" />
+          <Feather name="info" size={16} color="#004d3f" />
           <Text style={styles.tipText}>
-            Ao chegar no estabelecimento dentro da janela de horário, apresente o código no balcão para retirar sua sacola.
+            Ao chegar no estabelecimento dentro da janela de horário, apresente este código no balcão para retirar sua sacola.
           </Text>
         </View>
 
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#ebf5f2',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
@@ -109,18 +109,18 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
-    shadowColor: '#059669',
+    shadowColor: '#006654',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#0f172a',
     textAlign: 'center',
   },
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   ecoBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#ebf5f2',
     padding: 10,
     borderRadius: 10,
     marginTop: 6,
@@ -199,11 +199,11 @@ const styles = StyleSheet.create({
   ecoBadgeText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#059669',
+    color: '#006654',
   },
   tipBox: {
     flexDirection: 'row',
-    backgroundColor: '#f0f9ff',
+    backgroundColor: '#ebf5f2',
     borderRadius: 12,
     padding: 14,
     marginTop: 14,
@@ -213,12 +213,12 @@ const styles = StyleSheet.create({
   tipText: {
     flex: 1,
     fontSize: 12,
-    color: '#0369a1',
+    color: '#004d3f',
     lineHeight: 18,
   },
   primaryButton: {
     width: '100%',
-    backgroundColor: '#059669',
+    backgroundColor: '#006654',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 10,
     elevation: 3,
-    shadowColor: '#059669',
+    shadowColor: '#006654',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
