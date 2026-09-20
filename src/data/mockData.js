@@ -162,6 +162,25 @@ export const MOCK_BAGS = [
 
 export const MOCK_ORDERS = [
   {
+    id: 'ord-active-1',
+    voucherCode: 'SF-4821',
+    storeName: 'Padaria Artesanal Bella Vista',
+    storeAvatar: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150&auto=format&fit=crop&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    bagTitle: 'Sacola Surpresa de Pães & Salgados',
+    categoryLabel: 'Padaria & Confeitaria',
+    address: 'Rua Augusta, 1420 - Consolação, São Paulo',
+    pickupWindow: 'Hoje das 18h30 às 20h00',
+    date: 'Hoje',
+    price: 19.9,
+    originalPrice: 58.0,
+    savedAmount: 38.1,
+    quantity: 1,
+    status: 'active', // 'active', 'completed', 'cancelled'
+    co2SavedKg: 2.5,
+    secondsLeft: 4620, // ~1h 17m restantes para retirada
+  },
+  {
     id: 'ord-101',
     voucherCode: 'SF-9124',
     storeName: 'Padaria Artesanal Bella Vista',

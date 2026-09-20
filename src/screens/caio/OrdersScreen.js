@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,8 +12,26 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { MOCK_ORDERS } from '../../data/mockData';
 
-export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
-  const [activeTab, setActiveTab] = useState('history'); // 'active' ou 'history'
+export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onOpenVoucher }) {
+  const [activeTab, setActiveTab] = useState('active'); // 'active' ou 'history'
+  const [timeLeft, setTimeLeft] = useState(4620); // Segundos para retirada
+
+  // Contagem regressiva do pedido ativo
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatCountdown = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}h ${minutes
+      .toString()
+      .padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+  };
 
   const pastOrders = orders.filter((o) => o.status === 'completed');
   const activeOrders = orders.filter((o) => o.status === 'active');
@@ -72,6 +90,118 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {/* ABA 1: PEDIDOS ATIVOS */}
+        {activeTab === 'active' && (
+          <View>
+            {activeOrders.length > 0 ? (
+              activeOrders.map((order) => (
+                <View key={order.id} style={styles.activeCard}>
+                  {/* Banner de Status com Contagem Regressiva */}
+                  <View style={styles.activeTopBanner}>
+                    <View style={styles.statusLiveIndicator}>
+                      <View style={styles.pulseDot} />
+                      <Text style={styles.statusLiveText}>Pronto para Retirada</Text>
+                    </View>
+                    <View style={styles.countdownBadge}>
+                      <Feather name="clock" size={13} color="#b45309" />
+                      <Text style={styles.countdownText}>{formatCountdown(timeLeft)}</Text>
+                    </View>
+                  </View>
+
+                  {/* Foto e Informações Principais */}
+                  <View style={styles.activeImageWrapper}>
+                    <Image
+                      source={{ uri: order.coverImage }}
+                      style={styles.activeCoverImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.activeVoucherBadge}>
+                      <Text style={styles.activeVoucherCodeText}>CÓDIGO: {order.voucherCode}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.activeCardContent}>
+                    <View style={styles.storeHeaderRow}>
+                      <Image source={{ uri: order.storeAvatar }} style={styles.activeAvatar} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.activeStoreName}>{order.storeName}</Text>
+                        <Text style={styles.activeCategory}>{order.categoryLabel}</Text>
+                      </View>
+                    </View>
+
+                    <Text style={styles.activeBagTitle}>{order.bagTitle}</Text>
+
+                    {/* Dados de Retirada */}
+                    <View style={styles.pickupDetailBox}>
+                      <View style={styles.detailRow}>
+                        <Feather name="clock" size={15} color="#006654" />
+                        <View style={{ marginLeft: 8, flex: 1 }}>
+                          <Text style={styles.detailLabel}>Janela de Retirada:</Text>
+                          <Text style={styles.detailValueBold}>{order.pickupWindow}</Text>
+                        </View>
+                      </View>
+
+                      <View style={[styles.detailRow, { marginTop: 10 }]}>
+                        <Feather name="map-pin" size={15} color="#006654" />
+                        <View style={{ marginLeft: 8, flex: 1 }}>
+                          <Text style={styles.detailLabel}>Local para retirada:</Text>
+                          <Text style={styles.detailValue}>{order.address}</Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Resumo de Pagamento e Economia */}
+                    <View style={styles.priceRow}>
+                      <View>
+                        <Text style={styles.priceLabel}>Valor Pago</Text>
+                        <Text style={styles.priceValue}>
+                          R$ {order.price.toFixed(2).replace('.', ',')}
+                        </Text>
+                      </View>
+                      <View style={styles.savingsTag}>
+                        <Feather name="tag" size={12} color="#006654" />
+                        <Text style={styles.savingsTagText}>
+                          Você economizou R$ {order.savedAmount.toFixed(2).replace('.', ',')}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* Botão de Abrir Voucher */}
+                    <TouchableOpacity
+                      style={styles.viewVoucherButton}
+                      onPress={() => onOpenVoucher && onOpenVoucher(order)}
+                      activeOpacity={0.85}
+                    >
+                      <Feather name="shield" size={18} color="#ffffff" style={{ marginRight: 8 }} />
+                      <Text style={styles.viewVoucherButtonText}>Ver Voucher de Retirada</Text>
+                      <Feather name="arrow-right" size={16} color="#ffffff" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIconCircle}>
+                  <Feather name="inbox" size={36} color="#94a3b8" />
+                </View>
+                <Text style={styles.emptyTitle}>Nenhum pedido ativo no momento</Text>
+                <Text style={styles.emptySubtitle}>
+                  Explore as padarias e restaurantes ao seu redor e resgate sacolas com até 70% de desconto!
+                </Text>
+                <TouchableOpacity
+                  style={styles.exploreButton}
+                  onPress={onNavigateHome}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.exploreButtonText}>Explorar Sacolas do Dia</Text>
+                  <Feather name="arrow-right" size={16} color="#ffffff" style={{ marginLeft: 6 }} />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ABA 2: HISTÓRICO DE PEDIDOS */}
         {activeTab === 'history' && (
           <View style={styles.historySection}>
             <View style={styles.sectionHeader}>
@@ -138,18 +268,6 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
                 </View>
               </View>
             ))}
-          </View>
-        )}
-
-        {activeTab === 'active' && activeOrders.length === 0 && (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIconCircle}>
-              <Feather name="inbox" size={36} color="#94a3b8" />
-            </View>
-            <Text style={styles.emptyTitle}>Nenhum pedido ativo no momento</Text>
-            <Text style={styles.emptySubtitle}>
-              Explore as padarias e restaurantes ao seu redor e resgate sacolas com até 70% de desconto!
-            </Text>
           </View>
         )}
       </ScrollView>
@@ -223,6 +341,181 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
+
+  // CARD DE PEDIDO ATIVO
+  activeCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#006654',
+    elevation: 4,
+    shadowColor: '#006654',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    marginBottom: 20,
+  },
+  activeTopBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#e6f4f1',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  statusLiveIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pulseDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#10b981',
+    marginRight: 6,
+  },
+  statusLiveText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#006654',
+  },
+  countdownBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  countdownText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#b45309',
+    marginLeft: 4,
+  },
+  activeImageWrapper: {
+    height: 140,
+    position: 'relative',
+  },
+  activeCoverImage: {
+    width: '100%',
+    height: '100%',
+  },
+  activeVoucherBadge: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  activeVoucherCodeText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#34d399',
+    letterSpacing: 0.5,
+  },
+  activeCardContent: {
+    padding: 16,
+  },
+  storeHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  activeAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  activeStoreName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  activeCategory: {
+    fontSize: 12,
+    color: '#64748b',
+  },
+  activeBagTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0f172a',
+    marginBottom: 12,
+  },
+  pickupDetailBox: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  detailLabel: {
+    fontSize: 11,
+    color: '#64748b',
+  },
+  detailValueBold: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#006654',
+    marginTop: 1,
+  },
+  detailValue: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginTop: 1,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  savingsTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0fdf4',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  savingsTagText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#006654',
+    marginLeft: 4,
+  },
+  viewVoucherButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#006654',
+    borderRadius: 14,
+    paddingVertical: 14,
+    shadowColor: '#006654',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  viewVoucherButtonText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+
+  // SEÇÃO DE HISTÓRICO
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -347,7 +640,7 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 60,
+    paddingVertical: 50,
     paddingHorizontal: 30,
   },
   emptyIconCircle: {
@@ -371,5 +664,19 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     lineHeight: 18,
+    marginBottom: 20,
+  },
+  exploreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#006654',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  exploreButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
   },
 });
