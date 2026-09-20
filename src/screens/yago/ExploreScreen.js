@@ -1,21 +1,37 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { MOCK_BAGS } from '../../data/mockData';
+import BagCard from '../../components/BagCard';
 
 export default function ExploreScreen({ onSelectBag }) {
   return (
     <View style={styles.container}>
+      {/* Cabeçalho */}
       <View style={styles.header}>
-        <View>
+        <View style={styles.headerLeft}>
           <Text style={styles.greeting}>Olá, Yago 👋</Text>
-          <Text style={styles.location}>
-            <Feather name="map-pin" size={14} color="#059669" /> São Paulo, SP
-          </Text>
+          <View style={styles.locationRow}>
+            <Feather name="map-pin" size={13} color="#059669" />
+            <Text style={styles.locationText}>São Paulo, SP</Text>
+          </View>
+        </View>
+        <View style={styles.savedMealsBadge}>
+          <Feather name="heart" size={13} color="#059669" />
+          <Text style={styles.savedMealsText}>Salvar Comida</Text>
         </View>
       </View>
-      <View style={styles.content}>
-        <Text style={styles.placeholderText}>Feed de Sacolas Surpresa em construção...</Text>
-      </View>
+
+      {/* Lista de Sacolas */}
+      <FlatList
+        data={MOCK_BAGS}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <BagCard bag={item} onPress={onSelectBag} />
+        )}
+      />
     </View>
   );
 }
@@ -23,34 +39,56 @@ export default function ExploreScreen({ onSelectBag }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8fafc',
   },
   header: {
-    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
     paddingTop: 16,
-    paddingBottom: 12,
+    paddingBottom: 14,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: '#f1f5f9',
+  },
+  headerLeft: {
+    flex: 1,
   },
   greeting: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
+    fontWeight: '800',
+    color: '#0f172a',
   },
-  location: {
-    fontSize: 13,
-    color: '#6b7280',
-    marginTop: 2,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
+  locationRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    marginTop: 3,
   },
-  placeholderText: {
-    color: '#9ca3af',
-    fontSize: 15,
+  locationText: {
+    fontSize: 13,
+    color: '#64748b',
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  savedMealsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ecfdf5',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#a7f3d0',
+  },
+  savedMealsText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#059669',
+    marginLeft: 5,
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 24,
   },
 });
