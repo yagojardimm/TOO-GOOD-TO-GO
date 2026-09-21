@@ -12,7 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { MOCK_BAGS, CATEGORIES } from '../../data/mockData';
+import { MOCK_BAGS, CATEGORIES, MOCK_ORDERS } from '../../data/mockData';
 
 export default function PartnerScreen({ onBagCreated }) {
   const [partnerTab, setPartnerTab] = useState('overview'); // 'overview', 'new_bag', 'validate'
@@ -42,6 +42,24 @@ export default function PartnerScreen({ onBagCreated }) {
     'Pode conter pães artesanais, croissants folhados e salgados frescos assados no dia.'
   );
   const [publishSuccessBanner, setPublishSuccessBanner] = useState(false);
+
+  // Estados do validador de vouchers
+  const [inputVoucherCode, setInputVoucherCode] = useState('');
+  const [validationResult, setValidationResult] = useState(null); // null, { status: 'success' | 'error', data: ... }
+  const [validatedHistory, setValidatedHistory] = useState([
+    {
+      code: 'SF-9124',
+      customerName: 'Mariana Costa',
+      bagTitle: 'Sacola Surpresa de Pães & Salgados',
+      time: 'Ontem às 19:15',
+    },
+    {
+      code: 'SF-5502',
+      customerName: 'Lucas Ferreira',
+      bagTitle: 'Combo Croissants & Folhados',
+      time: 'Ontem às 19:40',
+    },
+  ]);
 
   // Cálculo de desconto dinâmico
   const orig = parseFloat(originalPrice) || 0;
@@ -88,6 +106,68 @@ export default function PartnerScreen({ onBagCreated }) {
     if (onBagCreated) {
       onBagCreated(newBag);
     }
+  };
+
+  // Validação de Vouchers de clientes
+  const handleValidateVoucher = (codeToTest) => {
+    const rawCode = (codeToTest || inputVoucherCode).trim().toUpperCase();
+    const cleanCode = rawCode.startsWith('SF-') ? rawCode : `SF-${rawCode}`;
+
+    if (!rawCode) {
+      Alert.alert('Código Vazio', 'Digite o código de 4 dígitos do voucher do cliente.');
+      return;
+    }
+
+    // Procura em MOCK_ORDERS ou códigos conhecidos
+    const foundOrder = MOCK_ORDERS.find(
+      (ord) => ord.voucherCode.toUpperCase() === cleanCode
+    );
+
+    // Verifica se já foi validado hoje
+    const alreadyValidated = validatedHistory.some(
+      (v) => v.code.toUpperCase() === cleanCode
+    );
+
+    if (alreadyValidated) {
+      setValidationResult({
+        status: 'error',
+        message: `O voucher ${cleanCode} já foi resgatado e entregue anteriormente!`,
+      });
+      return;
+    }
+
+    if (foundOrder || cleanCode === 'SF-4821' || cleanCode === 'SF-8821' || cleanCode === 'SF-2024') {
+      const resultData = {
+        code: cleanCode,
+        customerName: foundOrder ? 'Caio Jotta' : 'Cliente SaveFood',
+        bagTitle: foundOrder?.bagTitle || 'Sacola Surpresa de Pães & Salgados',
+        pricePaid: foundOrder?.price || 19.90,
+        pickupWindow: foundOrder?.pickupWindow || 'Hoje das 18h30 às 20h00',
+      };
+      setValidationResult({ status: 'success', data: resultData });
+    } else {
+      setValidationResult({
+        status: 'error',
+        message: `Código ${cleanCode} não encontrado no sistema. Verifique os dígitos com o cliente.`,
+      });
+    }
+  };
+
+  // Confirmar Entrega Física da Sacola
+  const handleConfirmHandover = () => {
+    if (!validationResult || validationResult.status !== 'success') return;
+
+    const newEntry = {
+      code: validationResult.data.code,
+      customerName: validationResult.data.customerName,
+      bagTitle: validationResult.data.bagTitle,
+      time: 'Agora mesmo (' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ')',
+    };
+
+    setValidatedHistory([newEntry, ...validatedHistory]);
+    setValidationResult(null);
+    setInputVoucherCode('');
+    Alert.alert('Sucesso!', 'Sacola entregue e resgate computado com sucesso.');
   };
 
   return (
@@ -311,7 +391,6 @@ export default function PartnerScreen({ onBagCreated }) {
               </View>
             </View>
 
-            {/* Campo: Título da Sacola */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Título da Sacola Surpresa *</Text>
               <TextInput
@@ -323,7 +402,6 @@ export default function PartnerScreen({ onBagCreated }) {
               />
             </View>
 
-            {/* Campo: Categoria */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Categoria do Estabelecimento</Text>
               <View style={styles.categoryPillRow}>
@@ -350,7 +428,6 @@ export default function PartnerScreen({ onBagCreated }) {
               </View>
             </View>
 
-            {/* Preços e Desconto */}
             <View style={styles.priceInputsRow}>
               <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
                 <Text style={styles.inputLabel}>Preço Original (R$)</Text>
@@ -375,7 +452,6 @@ export default function PartnerScreen({ onBagCreated }) {
               </View>
             </View>
 
-            {/* Tag de Desconto Calculado */}
             {discountPercent > 0 && (
               <View style={styles.discountBadgeCalculated}>
                 <Feather name="percent" size={14} color="#006654" />
@@ -385,7 +461,6 @@ export default function PartnerScreen({ onBagCreated }) {
               </View>
             )}
 
-            {/* Quantidade Disponível */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Quantidade de Sacolas Disponíveis</Text>
               <View style={styles.qtyControlRow}>
@@ -406,7 +481,6 @@ export default function PartnerScreen({ onBagCreated }) {
               </View>
             </View>
 
-            {/* Janela de Retirada */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Janela de Horário para Coleta</Text>
               <TextInput
@@ -418,7 +492,6 @@ export default function PartnerScreen({ onBagCreated }) {
               />
             </View>
 
-            {/* Descrição dos Itens */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Descrição ou Dica do Conteúdo</Text>
               <TextInput
@@ -432,7 +505,6 @@ export default function PartnerScreen({ onBagCreated }) {
               />
             </View>
 
-            {/* Botão Publicar */}
             <TouchableOpacity
               style={styles.submitBagButton}
               onPress={handleCreateBag}
@@ -444,14 +516,176 @@ export default function PartnerScreen({ onBagCreated }) {
           </View>
         )}
 
-        {/* PLACEHOLDER ABA VALIDAR */}
+        {/* ABA 3: VALIDADOR DE VOUCHERS DE CLIENTES */}
         {partnerTab === 'validate' && (
-          <View style={styles.placeholderContainer}>
-            <Feather name="check-square" size={40} color="#006654" />
-            <Text style={styles.placeholderTitle}>Validador de Voucher de Clientes</Text>
-            <Text style={styles.placeholderSubtitle}>
-              Digite o código de 4 dígitos apresentado pelo cliente para liberar a sacola.
-            </Text>
+          <View>
+            <View style={styles.validateCard}>
+              <View style={styles.validateHeader}>
+                <Feather name="check-square" size={24} color="#006654" />
+                <View style={{ marginLeft: 10, flex: 1 }}>
+                  <Text style={styles.validateTitle}>Validador de Voucher</Text>
+                  <Text style={styles.validateSubtitle}>
+                    Digite o código de 4 dígitos informado pelo cliente no balcão.
+                  </Text>
+                </View>
+              </View>
+
+              {/* Campo de Entrada do Código */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Código do Resgate (ex: 4821 ou SF-4821)</Text>
+                <View style={styles.voucherInputRow}>
+                  <TextInput
+                    style={styles.voucherTextInput}
+                    placeholder="SF-4821"
+                    placeholderTextColor="#94a3b8"
+                    autoCapitalize="characters"
+                    value={inputVoucherCode}
+                    onChangeText={(text) => {
+                      setInputVoucherCode(text);
+                      if (validationResult) setValidationResult(null);
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={styles.validateButton}
+                    onPress={() => handleValidateVoucher()}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.validateButtonText}>Verificar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Botões Rápidos de Teste */}
+              <View style={styles.quickCodeRow}>
+                <Text style={styles.quickCodeLabel}>Testar código:</Text>
+                <TouchableOpacity
+                  style={styles.quickCodeChip}
+                  onPress={() => {
+                    setInputVoucherCode('SF-4821');
+                    handleValidateVoucher('SF-4821');
+                  }}
+                >
+                  <Text style={styles.quickCodeChipText}>SF-4821 (Ativo Hoje)</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.quickCodeChip}
+                  onPress={() => {
+                    setInputVoucherCode('SF-9124');
+                    handleValidateVoucher('SF-9124');
+                  }}
+                >
+                  <Text style={styles.quickCodeChipText}>SF-9124 (Já Usado)</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* CARD DE RESULTADO DA VALIDAÇÃO */}
+              {validationResult && (
+                <View
+                  style={[
+                    styles.resultCard,
+                    validationResult.status === 'success'
+                      ? styles.resultCardSuccess
+                      : styles.resultCardError,
+                  ]}
+                >
+                  {validationResult.status === 'success' ? (
+                    <View>
+                      <View style={styles.resultHeaderRow}>
+                        <View style={styles.resultSuccessIconBox}>
+                          <Feather name="check" size={20} color="#ffffff" />
+                        </View>
+                        <View style={{ flex: 1, marginLeft: 10 }}>
+                          <Text style={styles.resultSuccessTitle}>Voucher Autenticado!</Text>
+                          <Text style={styles.resultSuccessSubtitle}>
+                            Pronto para entrega da sacola
+                          </Text>
+                        </View>
+                        <View style={styles.codePillSuccess}>
+                          <Text style={styles.codePillText}>
+                            {validationResult.data.code}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={styles.resultDetailsBox}>
+                        <View style={styles.resultDetailRow}>
+                          <Text style={styles.resultDetailLabel}>Cliente:</Text>
+                          <Text style={styles.resultDetailValue}>
+                            {validationResult.data.customerName}
+                          </Text>
+                        </View>
+                        <View style={styles.resultDetailRow}>
+                          <Text style={styles.resultDetailLabel}>Sacola:</Text>
+                          <Text style={styles.resultDetailValue}>
+                            {validationResult.data.bagTitle}
+                          </Text>
+                        </View>
+                        <View style={styles.resultDetailRow}>
+                          <Text style={styles.resultDetailLabel}>Valor Pago:</Text>
+                          <Text style={styles.resultDetailValue}>
+                            R$ {validationResult.data.pricePaid.toFixed(2).replace('.', ',')}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <TouchableOpacity
+                        style={styles.confirmHandoverBtn}
+                        onPress={handleConfirmHandover}
+                        activeOpacity={0.85}
+                      >
+                        <Feather
+                          name="check-circle"
+                          size={18}
+                          color="#ffffff"
+                          style={{ marginRight: 8 }}
+                        />
+                        <Text style={styles.confirmHandoverBtnText}>
+                          Confirmar Entrega da Sacola
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View style={styles.resultErrorRow}>
+                      <Feather name="alert-circle" size={24} color="#ef4444" />
+                      <View style={{ flex: 1, marginLeft: 10 }}>
+                        <Text style={styles.resultErrorTitle}>Voucher Inválido</Text>
+                        <Text style={styles.resultErrorSubtitle}>
+                          {validationResult.message}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+              )}
+            </View>
+
+            {/* Histórico de Vouchers Validados Hoje */}
+            <View style={styles.historyCard}>
+              <Text style={styles.sectionTitle}>Vouchers Validados Hoje</Text>
+              {validatedHistory.map((item, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.historyItem,
+                    index !== validatedHistory.length - 1 && styles.historyItemBorder,
+                  ]}
+                >
+                  <View style={styles.historyIconCircle}>
+                    <Feather name="check" size={14} color="#006654" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.historyTopRow}>
+                      <Text style={styles.historyCustomer}>{item.customerName}</Text>
+                      <View style={styles.historyCodeBadge}>
+                        <Text style={styles.historyCodeText}>{item.code}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.historyBag}>{item.bagTitle}</Text>
+                    <Text style={styles.historyTime}>{item.time}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
         )}
       </ScrollView>
@@ -903,29 +1137,240 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 
-  // PLACEHOLDERS
-  placeholderContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 50,
-    paddingHorizontal: 30,
+  // VALIDADOR DE VOUCHERS
+  validateCard: {
     backgroundColor: '#ffffff',
     borderRadius: 20,
+    padding: 18,
     borderWidth: 1,
     borderColor: '#e2e8f0',
+    marginBottom: 18,
   },
-  placeholderTitle: {
+  validateHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  validateTitle: {
     fontSize: 16,
     fontWeight: '800',
     color: '#0f172a',
-    marginTop: 14,
-    textAlign: 'center',
   },
-  placeholderSubtitle: {
-    fontSize: 13,
+  validateSubtitle: {
+    fontSize: 12,
     color: '#64748b',
-    textAlign: 'center',
+    marginTop: 2,
+  },
+  voucherInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  voucherTextInput: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1.5,
+    borderColor: '#cbd5e1',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0f172a',
+    letterSpacing: 1.5,
+  },
+  validateButton: {
+    backgroundColor: '#006654',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginLeft: 10,
+  },
+  validateButtonText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  quickCodeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
     marginTop: 6,
-    lineHeight: 18,
+    marginBottom: 14,
+  },
+  quickCodeLabel: {
+    fontSize: 11,
+    color: '#64748b',
+    marginRight: 6,
+  },
+  quickCodeChip: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 6,
+    marginTop: 4,
+  },
+  quickCodeChipText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#006654',
+  },
+  resultCard: {
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 10,
+  },
+  resultCardSuccess: {
+    backgroundColor: '#f0fdf4',
+    borderWidth: 1.5,
+    borderColor: '#86efac',
+  },
+  resultCardError: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1.5,
+    borderColor: '#fca5a5',
+  },
+  resultHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  resultSuccessIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#10b981',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resultSuccessTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#065f46',
+  },
+  resultSuccessSubtitle: {
+    fontSize: 12,
+    color: '#047857',
+  },
+  codePillSuccess: {
+    backgroundColor: '#006654',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  codePillText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  resultDetailsBox: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  resultDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 3,
+  },
+  resultDetailLabel: {
+    fontSize: 12,
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  resultDetailValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  confirmHandoverBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#006654',
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  confirmHandoverBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  resultErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  resultErrorTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#991b1b',
+  },
+  resultErrorSubtitle: {
+    fontSize: 12,
+    color: '#b91c1c',
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  historyCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  historyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  historyItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  historyIconCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#e6f4f1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  historyTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  historyCustomer: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  historyCodeBadge: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  historyCodeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  historyBag: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 1,
+  },
+  historyTime: {
+    fontSize: 10,
+    color: '#94a3b8',
+    marginTop: 2,
   },
 });
