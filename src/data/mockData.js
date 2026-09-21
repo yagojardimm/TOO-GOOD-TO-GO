@@ -239,3 +239,45 @@ export const MOCK_ORDERS = [
   },
 ];
 
+export const MOCK_USER_IMPACT = {
+  userName: 'Caio Jotta',
+  mealsSaved: 14,
+  moneySaved: 382.5,
+  co2SavedKg: 35.0,
+  waterSavedLiters: 4200,
+  currentLevel: 3,
+  levelTitle: 'Guardião da Comida',
+  nextLevelMeals: 20,
+  badges: [
+    {
+      id: 'b1',
+      title: 'Primeiro Resgate',
+      desc: 'Salvou a 1ª sacola surpresa',
+      icon: 'award',
+      unlocked: true,
+    },
+    {
+      id: 'b2',
+      title: 'Mestre da Padaria',
+      desc: '5 sacolas de pães resgatadas',
+      icon: 'coffee',
+      unlocked: true,
+    },
+    {
+      id: 'b3',
+      title: 'Eco Guerreiro',
+      desc: 'Mais de 25 kg de CO₂e poupados',
+      icon: 'globe',
+      unlocked: true,
+    },
+    {
+      id: 'b4',
+      title: 'Herói Noturno',
+      desc: 'Resgate após as 21h00',
+      icon: 'moon',
+      unlocked: false,
+    },
+  ],
+};
+
+
