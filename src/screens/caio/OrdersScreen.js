@@ -9,14 +9,26 @@ import {
   SafeAreaView,
   StatusBar,
   Modal,
+  Alert,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { MOCK_ORDERS } from '../../data/mockData';
 
-export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
+export default function OrdersScreen({
+  orders = MOCK_ORDERS,
+  onNavigateHome,
+  onOrderRedeemed,
+}) {
+  const [ordersList, setOrdersList] = useState(orders);
   const [activeTab, setActiveTab] = useState('active'); // 'active' ou 'history'
   const [timeLeft, setTimeLeft] = useState(4620); // Segundos para retirada
   const [selectedVoucherOrder, setSelectedVoucherOrder] = useState(null);
+  const [redeemSuccessModal, setRedeemSuccessModal] = useState(null);
+
+  // Sincroniza com as props se mudarem externamente
+  useEffect(() => {
+    setOrdersList(orders);
+  }, [orders]);
 
   // Contagem regressiva do pedido ativo
   useEffect(() => {
@@ -35,8 +47,30 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
       .padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
   };
 
-  const pastOrders = orders.filter((o) => o.status === 'completed');
-  const activeOrders = orders.filter((o) => o.status === 'active');
+  // Confirmação de Resgate no Balcão
+  const handleConfirmRedeem = (orderToRedeem) => {
+    const updated = ordersList.map((ord) => {
+      if (ord.id === orderToRedeem.id) {
+        return {
+          ...ord,
+          status: 'completed',
+          date: 'Hoje às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        };
+      }
+      return ord;
+    });
+
+    setOrdersList(updated);
+    setSelectedVoucherOrder(null);
+    setRedeemSuccessModal(orderToRedeem);
+
+    if (onOrderRedeemed) {
+      onOrderRedeemed(orderToRedeem);
+    }
+  };
+
+  const pastOrders = ordersList.filter((o) => o.status === 'completed');
+  const activeOrders = ordersList.filter((o) => o.status === 'active');
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -359,13 +393,66 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
                 </View>
               </View>
 
+              {/* BOTÃO DE CONFIRMAÇÃO DO RESGATE NO BALCÃO */}
+              <TouchableOpacity
+                style={styles.confirmRedeemButton}
+                onPress={() => handleConfirmRedeem(selectedVoucherOrder)}
+                activeOpacity={0.85}
+              >
+                <Feather name="check" size={20} color="#ffffff" style={{ marginRight: 8 }} />
+                <Text style={styles.confirmRedeemButtonText}>
+                  Confirmar Resgate no Balcão
+                </Text>
+              </TouchableOpacity>
+
               {/* Botão de Fechar Voucher */}
               <TouchableOpacity
                 style={styles.dismissVoucherBtn}
                 onPress={() => setSelectedVoucherOrder(null)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.dismissVoucherBtnText}>Voltar aos Meus Pedidos</Text>
+                <Text style={styles.dismissVoucherBtnText}>Voltar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </Modal>
+
+      {/* MODAL DE SUCESSO DE RESGATE */}
+      <Modal
+        visible={!!redeemSuccessModal}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setRedeemSuccessModal(null)}
+      >
+        {redeemSuccessModal && (
+          <View style={styles.modalOverlay}>
+            <View style={styles.successCelebrationCard}>
+              <View style={styles.celebrationIconBox}>
+                <Feather name="award" size={40} color="#ffffff" />
+              </View>
+
+              <Text style={styles.celebrationTitle}>Resgate Confirmado!</Text>
+              <Text style={styles.celebrationSubtitle}>
+                Parabéns! Sua sacola da {redeemSuccessModal.storeName} foi resgatada com sucesso.
+              </Text>
+
+              <View style={styles.celebrationEcoBadge}>
+                <Feather name="globe" size={16} color="#006654" />
+                <Text style={styles.celebrationEcoText}>
+                  +1 Refeição salva • -2.5 kg de CO₂e no planeta!
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.celebrationCloseBtn}
+                onPress={() => {
+                  setRedeemSuccessModal(null);
+                  setActiveTab('history');
+                }}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.celebrationCloseBtnText}>Ver no Histórico</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -780,7 +867,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 
-  // MODAL DE VOUCHER DIGITAL
+  // MODAL DO VOUCHER DIGITAL
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.75)',
@@ -952,6 +1039,25 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: '500',
   },
+  confirmRedeemButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10b981',
+    borderRadius: 14,
+    paddingVertical: 14,
+    marginBottom: 10,
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  confirmRedeemButtonText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
   dismissVoucherBtn: {
     backgroundColor: '#f1f5f9',
     borderRadius: 12,
@@ -962,5 +1068,69 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#475569',
+  },
+
+  // MODAL DE CELEBRAÇÃO DO RESGATE
+  successCelebrationCard: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  celebrationIconBox: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: '#006654',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  celebrationTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#0f172a',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  celebrationSubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  celebrationEcoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e6f4f1',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  celebrationEcoText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#006654',
+    marginLeft: 6,
+  },
+  celebrationCloseBtn: {
+    width: '100%',
+    backgroundColor: '#006654',
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  celebrationCloseBtnText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#ffffff',
   },
 });
