@@ -3,16 +3,18 @@ import {
   View,
   Text,
   Image,
+  TextInput,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { MOCK_BAGS } from '../../data/mockData';
+import { MOCK_BAGS, CATEGORIES } from '../../data/mockData';
 
-export default function PartnerScreen() {
+export default function PartnerScreen({ onBagCreated }) {
   const [partnerTab, setPartnerTab] = useState('overview'); // 'overview', 'new_bag', 'validate'
 
   // Estabelecimento parceiro de exemplo
@@ -25,7 +27,68 @@ export default function PartnerScreen() {
     isOpen: true,
   };
 
-  const partnerBags = MOCK_BAGS.filter((b) => b.storeName === partnerStore.name);
+  const [bagsList, setBagsList] = useState(
+    MOCK_BAGS.filter((b) => b.storeName === partnerStore.name)
+  );
+
+  // Estados do formulário de nova sacola
+  const [bagTitle, setBagTitle] = useState('');
+  const [category, setCategory] = useState('bakery');
+  const [originalPrice, setOriginalPrice] = useState('60');
+  const [discountPrice, setDiscountPrice] = useState('19.90');
+  const [quantity, setQuantity] = useState(3);
+  const [pickupWindow, setPickupWindow] = useState('Hoje das 18h30 às 20h00');
+  const [description, setDescription] = useState(
+    'Pode conter pães artesanais, croissants folhados e salgados frescos assados no dia.'
+  );
+  const [publishSuccessBanner, setPublishSuccessBanner] = useState(false);
+
+  // Cálculo de desconto dinâmico
+  const orig = parseFloat(originalPrice) || 0;
+  const disc = parseFloat(discountPrice) || 0;
+  const discountPercent = orig > 0 && disc > 0 ? Math.round(((orig - disc) / orig) * 100) : 0;
+
+  // Submissão do formulário de nova sacola
+  const handleCreateBag = () => {
+    if (!bagTitle.trim()) {
+      Alert.alert('Campo Obrigatório', 'Por favor, informe o título da sacola surpresa.');
+      return;
+    }
+
+    const newBag = {
+      id: 'partner-bag-' + Date.now(),
+      storeName: partnerStore.name,
+      storeAvatar: partnerStore.avatar,
+      coverImage:
+        'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop&q=80',
+      category: category,
+      categoryLabel: CATEGORIES.find((c) => c.id === category)?.label || 'Padaria',
+      rating: 4.9,
+      reviewsCount: 1,
+      distance: '0 m (Minha Loja)',
+      address: partnerStore.address,
+      bagTitle: bagTitle.trim(),
+      bagDescription: description.trim(),
+      originalPrice: orig,
+      price: disc,
+      discountPercentage: discountPercent > 0 ? discountPercent : 65,
+      pickupWindow: pickupWindow.trim(),
+      remainingItems: quantity,
+      pickupRules: [
+        'Apresente o código do voucher na retirada',
+        'Consumo imediato recomendado',
+      ],
+    };
+
+    setBagsList([newBag, ...bagsList]);
+    setBagTitle('');
+    setPublishSuccessBanner(true);
+    setPartnerTab('overview');
+
+    if (onBagCreated) {
+      onBagCreated(newBag);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -125,7 +188,23 @@ export default function PartnerScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* ABA: VISÃO GERAL */}
+        {/* Banner de Sucesso ao Publicar Sacola */}
+        {publishSuccessBanner && (
+          <View style={styles.successBanner}>
+            <Feather name="check-circle" size={20} color="#006654" />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.successBannerTitle}>Sacola Publicada com Sucesso!</Text>
+              <Text style={styles.successBannerDesc}>
+                Seus excedentes já estão visíveis no feed para os clientes reservarem.
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => setPublishSuccessBanner(false)}>
+              <Feather name="x" size={16} color="#006654" />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* ABA 1: VISÃO GERAL */}
         {partnerTab === 'overview' && (
           <View>
             {/* Resumo de Métricas de Hoje */}
@@ -177,7 +256,7 @@ export default function PartnerScreen() {
 
             {/* Sacolas Ativas no Aplicativo */}
             <View style={styles.bagsHeaderRow}>
-              <Text style={styles.sectionTitle}>Sacolas Ativas no App ({partnerBags.length})</Text>
+              <Text style={styles.sectionTitle}>Sacolas Ativas no App ({bagsList.length})</Text>
               <TouchableOpacity
                 onPress={() => setPartnerTab('new_bag')}
                 style={styles.addBagQuickBtn}
@@ -187,7 +266,7 @@ export default function PartnerScreen() {
               </TouchableOpacity>
             </View>
 
-            {partnerBags.map((bag) => (
+            {bagsList.map((bag) => (
               <View key={bag.id} style={styles.bagCard}>
                 <Image source={{ uri: bag.coverImage }} style={styles.bagCover} />
                 <View style={styles.bagContent}>
@@ -219,14 +298,149 @@ export default function PartnerScreen() {
           </View>
         )}
 
-        {/* PLACEHOLDER ABA NOVA SACOLA */}
+        {/* ABA 2: FORMULÁRIO PARA CADASTRAR NOVA SACOLA */}
         {partnerTab === 'new_bag' && (
-          <View style={styles.placeholderContainer}>
-            <Feather name="plus-circle" size={40} color="#006654" />
-            <Text style={styles.placeholderTitle}>Cadastrar Nova Sacola Excedente</Text>
-            <Text style={styles.placeholderSubtitle}>
-              Disponibilize excedentes do dia para a comunidade salvar.
-            </Text>
+          <View style={styles.formContainer}>
+            <View style={styles.formHeader}>
+              <Feather name="plus-circle" size={24} color="#006654" />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <Text style={styles.formTitle}>Cadastrar Sacola Excedente</Text>
+                <Text style={styles.formSubtitle}>
+                  Transforme comida boa em receita extra e evite o descarte.
+                </Text>
+              </View>
+            </View>
+
+            {/* Campo: Título da Sacola */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Título da Sacola Surpresa *</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Ex: Sacola Surpresa de Focaccias & Pães"
+                placeholderTextColor="#94a3b8"
+                value={bagTitle}
+                onChangeText={setBagTitle}
+              />
+            </View>
+
+            {/* Campo: Categoria */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Categoria do Estabelecimento</Text>
+              <View style={styles.categoryPillRow}>
+                {CATEGORIES.filter((c) => c.id !== 'all').map((cat) => {
+                  const isCatSelected = category === cat.id;
+                  return (
+                    <TouchableOpacity
+                      key={cat.id}
+                      style={[styles.catPill, isCatSelected && styles.catPillSelected]}
+                      onPress={() => setCategory(cat.id)}
+                      activeOpacity={0.7}
+                    >
+                      <Text
+                        style={[
+                          styles.catPillText,
+                          isCatSelected && styles.catPillTextSelected,
+                        ]}
+                      >
+                        {cat.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Preços e Desconto */}
+            <View style={styles.priceInputsRow}>
+              <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
+                <Text style={styles.inputLabel}>Preço Original (R$)</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="58.00"
+                  keyboardType="numeric"
+                  value={originalPrice}
+                  onChangeText={setOriginalPrice}
+                />
+              </View>
+
+              <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
+                <Text style={styles.inputLabel}>Preço SaveFood (R$)</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="19.90"
+                  keyboardType="numeric"
+                  value={discountPrice}
+                  onChangeText={setDiscountPrice}
+                />
+              </View>
+            </View>
+
+            {/* Tag de Desconto Calculado */}
+            {discountPercent > 0 && (
+              <View style={styles.discountBadgeCalculated}>
+                <Feather name="percent" size={14} color="#006654" />
+                <Text style={styles.discountBadgeText}>
+                  Desconto de {discountPercent}% para o cliente
+                </Text>
+              </View>
+            )}
+
+            {/* Quantidade Disponível */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Quantidade de Sacolas Disponíveis</Text>
+              <View style={styles.qtyControlRow}>
+                <TouchableOpacity
+                  style={[styles.qtyBtn, quantity <= 1 && styles.qtyBtnDisabled]}
+                  onPress={() => quantity > 1 && setQuantity(quantity - 1)}
+                  disabled={quantity <= 1}
+                >
+                  <Feather name="minus" size={18} color={quantity <= 1 ? '#cbd5e1' : '#0f172a'} />
+                </TouchableOpacity>
+                <Text style={styles.qtyNumber}>{quantity} sacolas</Text>
+                <TouchableOpacity
+                  style={styles.qtyBtn}
+                  onPress={() => setQuantity(quantity + 1)}
+                >
+                  <Feather name="plus" size={18} color="#0f172a" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Janela de Retirada */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Janela de Horário para Coleta</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Ex: Hoje das 18h30 às 20h00"
+                placeholderTextColor="#94a3b8"
+                value={pickupWindow}
+                onChangeText={setPickupWindow}
+              />
+            </View>
+
+            {/* Descrição dos Itens */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Descrição ou Dica do Conteúdo</Text>
+              <TextInput
+                style={[styles.textInput, styles.textArea]}
+                placeholder="Descreva o que pode vir na sacola..."
+                placeholderTextColor="#94a3b8"
+                multiline
+                numberOfLines={3}
+                value={description}
+                onChangeText={setDescription}
+              />
+            </View>
+
+            {/* Botão Publicar */}
+            <TouchableOpacity
+              style={styles.submitBagButton}
+              onPress={handleCreateBag}
+              activeOpacity={0.85}
+            >
+              <Feather name="upload-cloud" size={18} color="#ffffff" style={{ marginRight: 8 }} />
+              <Text style={styles.submitBagButtonText}>Publicar Sacola Surpresa</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -365,6 +579,26 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 20,
     paddingBottom: 40,
+  },
+  successBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e6f4f1',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  successBannerTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#006654',
+  },
+  successBannerDesc: {
+    fontSize: 12,
+    color: '#004d3f',
+    marginTop: 1,
   },
   sectionTitle: {
     fontSize: 16,
@@ -526,6 +760,150 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#15803d',
   },
+
+  // FORMULÁRIO DE NOVA SACOLA
+  formContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  formHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  formTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  formSubtitle: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 2,
+  },
+  inputGroup: {
+    marginBottom: 14,
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 6,
+  },
+  textInput: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#0f172a',
+  },
+  textArea: {
+    height: 70,
+    textAlignVertical: 'top',
+  },
+  categoryPillRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  catPill: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 16,
+    marginRight: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  catPillSelected: {
+    backgroundColor: '#e6f4f1',
+    borderColor: '#006654',
+  },
+  catPillText: {
+    fontSize: 12,
+    color: '#475569',
+    fontWeight: '600',
+  },
+  catPillTextSelected: {
+    color: '#006654',
+    fontWeight: '700',
+  },
+  priceInputsRow: {
+    flexDirection: 'row',
+  },
+  discountBadgeCalculated: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e6f4f1',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    marginBottom: 14,
+  },
+  discountBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#006654',
+    marginLeft: 6,
+  },
+  qtyControlRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    padding: 4,
+    justifyContent: 'space-between',
+  },
+  qtyBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  qtyBtnDisabled: {
+    backgroundColor: '#f1f5f9',
+  },
+  qtyNumber: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  submitBagButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#006654',
+    borderRadius: 14,
+    paddingVertical: 14,
+    marginTop: 8,
+    shadowColor: '#006654',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  submitBagButtonText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+
+  // PLACEHOLDERS
   placeholderContainer: {
     alignItems: 'center',
     justifyContent: 'center',
