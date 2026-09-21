@@ -8,13 +8,15 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Modal,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { MOCK_ORDERS } from '../../data/mockData';
 
-export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onOpenVoucher }) {
+export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome }) {
   const [activeTab, setActiveTab] = useState('active'); // 'active' ou 'history'
   const [timeLeft, setTimeLeft] = useState(4620); // Segundos para retirada
+  const [selectedVoucherOrder, setSelectedVoucherOrder] = useState(null);
 
   // Contagem regressiva do pedido ativo
   useEffect(() => {
@@ -116,7 +118,7 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
                       resizeMode="cover"
                     />
                     <View style={styles.activeVoucherBadge}>
-                      <Text style={styles.activeVoucherCodeText}>CÓDIGO: {order.voucherCode}</Text>
+                      <Text style={styles.activeVoucherCodeText}>VOUCHER: {order.voucherCode}</Text>
                     </View>
                   </View>
 
@@ -169,7 +171,7 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
                     {/* Botão de Abrir Voucher */}
                     <TouchableOpacity
                       style={styles.viewVoucherButton}
-                      onPress={() => onOpenVoucher && onOpenVoucher(order)}
+                      onPress={() => setSelectedVoucherOrder(order)}
                       activeOpacity={0.85}
                     >
                       <Feather name="shield" size={18} color="#ffffff" style={{ marginRight: 8 }} />
@@ -211,7 +213,6 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
 
             {pastOrders.map((order) => (
               <View key={order.id} style={styles.orderCard}>
-                {/* Cabeçalho do Card */}
                 <View style={styles.cardHeader}>
                   <Image source={{ uri: order.storeAvatar }} style={styles.storeAvatar} />
                   <View style={{ flex: 1 }}>
@@ -224,7 +225,6 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
                   </View>
                 </View>
 
-                {/* Corpo do Pedido */}
                 <View style={styles.cardBody}>
                   <Text style={styles.bagTitle}>{order.bagTitle}</Text>
                   <Text style={styles.storeAddress} numberOfLines={1}>
@@ -232,7 +232,6 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
                   </Text>
                 </View>
 
-                {/* Faixa de Economia e CO2 */}
                 <View style={styles.ecoHighlight}>
                   <View style={styles.ecoItem}>
                     <Feather name="globe" size={13} color="#006654" />
@@ -248,7 +247,6 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
                   </View>
                 </View>
 
-                {/* Rodapé com Preço e Ação */}
                 <View style={styles.cardFooter}>
                   <View>
                     <Text style={styles.priceLabel}>Valor Pago</Text>
@@ -271,6 +269,108 @@ export default function OrdersScreen({ orders = MOCK_ORDERS, onNavigateHome, onO
           </View>
         )}
       </ScrollView>
+
+      {/* MODAL DO VOUCHER DIGITAL DE RETIRADA */}
+      <Modal
+        visible={!!selectedVoucherOrder}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setSelectedVoucherOrder(null)}
+      >
+        {selectedVoucherOrder && (
+          <View style={styles.modalOverlay}>
+            <View style={styles.voucherContainer}>
+              {/* Header do Voucher */}
+              <View style={styles.voucherHeader}>
+                <View style={styles.voucherBrandRow}>
+                  <Feather name="check-circle" size={20} color="#006654" />
+                  <Text style={styles.voucherBrandTitle}>VOUCHER DE RETIRADA</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setSelectedVoucherOrder(null)}
+                  style={styles.closeVoucherBtn}
+                >
+                  <Feather name="x" size={20} color="#64748b" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Informações da Loja */}
+              <View style={styles.voucherStoreRow}>
+                <Image
+                  source={{ uri: selectedVoucherOrder.storeAvatar }}
+                  style={styles.voucherStoreAvatar}
+                />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.voucherStoreName}>
+                    {selectedVoucherOrder.storeName}
+                  </Text>
+                  <Text style={styles.voucherBagTitle} numberOfLines={1}>
+                    {selectedVoucherOrder.bagTitle}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Bloco Central do Código Digital */}
+              <View style={styles.voucherCodeCard}>
+                <Text style={styles.voucherCodeLabel}>CÓDIGO DE RESGATE NO BALCÃO</Text>
+                <View style={styles.codeHighlightBox}>
+                  <Text style={styles.codeTextPrimary}>
+                    {selectedVoucherOrder.voucherCode}
+                  </Text>
+                </View>
+                <Text style={styles.codeInstructionText}>
+                  Apresente este código ao funcionário do estabelecimento
+                </Text>
+
+                {/* Representação Visual Estilizada de QR Code */}
+                <View style={styles.qrRepresentation}>
+                  <View style={styles.qrRow}>
+                    <View style={[styles.qrCorner, styles.qrCornerTopLeft]} />
+                    <View style={styles.qrPattern} />
+                    <View style={[styles.qrCorner, styles.qrCornerTopRight]} />
+                  </View>
+                  <View style={styles.qrRowCenter}>
+                    <View style={styles.qrCenterDot} />
+                    <Feather name="shield" size={26} color="#006654" />
+                    <View style={styles.qrCenterDot} />
+                  </View>
+                  <View style={styles.qrRow}>
+                    <View style={[styles.qrCorner, styles.qrCornerBottomLeft]} />
+                    <View style={styles.qrPattern} />
+                    <View style={[styles.qrCorner, styles.qrCornerBottomRight]} />
+                  </View>
+                </View>
+                <Text style={styles.qrSubtext}>Autenticado pelo SaveFood Protocol</Text>
+              </View>
+
+              {/* Detalhes de Retirada */}
+              <View style={styles.voucherInfoList}>
+                <View style={styles.voucherInfoItem}>
+                  <Feather name="clock" size={15} color="#006654" />
+                  <Text style={styles.voucherInfoText}>
+                    Horário: {selectedVoucherOrder.pickupWindow}
+                  </Text>
+                </View>
+                <View style={styles.voucherInfoItem}>
+                  <Feather name="map-pin" size={15} color="#006654" />
+                  <Text style={styles.voucherInfoText} numberOfLines={1}>
+                    {selectedVoucherOrder.address}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Botão de Fechar Voucher */}
+              <TouchableOpacity
+                style={styles.dismissVoucherBtn}
+                onPress={() => setSelectedVoucherOrder(null)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.dismissVoucherBtnText}>Voltar aos Meus Pedidos</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -678,5 +778,189 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#ffffff',
+  },
+
+  // MODAL DE VOUCHER DIGITAL
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  voucherContainer: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 22,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  voucherHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  voucherBrandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  voucherBrandTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#006654',
+    marginLeft: 6,
+    letterSpacing: 0.5,
+  },
+  closeVoucherBtn: {
+    padding: 4,
+  },
+  voucherStoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 14,
+    marginBottom: 16,
+  },
+  voucherStoreAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 12,
+  },
+  voucherStoreName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  voucherBagTitle: {
+    fontSize: 13,
+    color: '#64748b',
+    marginTop: 2,
+  },
+  voucherCodeCard: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 18,
+    padding: 18,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    borderStyle: 'dashed',
+    marginBottom: 16,
+  },
+  voucherCodeLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#64748b',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  codeHighlightBox: {
+    backgroundColor: '#006654',
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 14,
+    marginBottom: 8,
+  },
+  codeTextPrimary: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: 2,
+  },
+  codeInstructionText: {
+    fontSize: 12,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  qrRepresentation: {
+    width: 140,
+    height: 140,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    padding: 10,
+    justifyContent: 'space-between',
+  },
+  qrRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  qrRowCenter: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  qrCorner: {
+    width: 28,
+    height: 28,
+    backgroundColor: '#0f172a',
+    borderRadius: 4,
+  },
+  qrCornerTopLeft: {
+    borderTopLeftRadius: 8,
+  },
+  qrCornerTopRight: {
+    borderTopRightRadius: 8,
+  },
+  qrCornerBottomLeft: {
+    borderBottomLeftRadius: 8,
+  },
+  qrCornerBottomRight: {
+    borderBottomRightRadius: 8,
+  },
+  qrPattern: {
+    width: 16,
+    height: 16,
+    backgroundColor: '#006654',
+    borderRadius: 2,
+  },
+  qrCenterDot: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#0f172a',
+    borderRadius: 4,
+  },
+  qrSubtext: {
+    fontSize: 10,
+    color: '#94a3b8',
+    marginTop: 8,
+    fontWeight: '600',
+  },
+  voucherInfoList: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+  },
+  voucherInfoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 3,
+  },
+  voucherInfoText: {
+    fontSize: 12,
+    color: '#334155',
+    marginLeft: 8,
+    fontWeight: '500',
+  },
+  dismissVoucherBtn: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  dismissVoucherBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#475569',
   },
 });
