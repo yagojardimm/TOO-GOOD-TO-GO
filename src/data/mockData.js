@@ -240,7 +240,9 @@ export const MOCK_ORDERS = [
 ];
 
 export const MOCK_USER_IMPACT = {
-  userName: 'Caio Jotta',
+  userName: 'Caio Cezar',
+  userEmail: 'usuario.eco@savefood.app',
+  avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
   mealsSaved: 14,
   moneySaved: 382.5,
   co2SavedKg: 35.0,

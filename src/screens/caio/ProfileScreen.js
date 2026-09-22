@@ -71,7 +71,7 @@ export default function ProfileScreen({ impactData = MOCK_USER_IMPACT }) {
           <View style={styles.avatarWrapper}>
             <Image
               source={{
-                uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+                uri: impactData.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
               }}
               style={styles.avatarImage}
             />
@@ -81,8 +81,8 @@ export default function ProfileScreen({ impactData = MOCK_USER_IMPACT }) {
           </View>
 
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{impactData.userName}</Text>
-            <Text style={styles.userEmail}>caiojotta18@gmail.com</Text>
+            <Text style={styles.userName}>{impactData.userName || 'Membro SaveFood'}</Text>
+            <Text style={styles.userEmail}>{impactData.userEmail || 'usuario.eco@savefood.app'}</Text>
 
             <View style={styles.badgePill}>
               <Feather name="shield" size={12} color="#006654" />

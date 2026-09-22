@@ -37,11 +37,74 @@ Aplicativo mobile híbrido desenvolvido com **React Native** e **Expo**, inspira
    * Orientações de coleta e botão de direcionamento para acompanhamento de vouchers.
 
 ### 🔵 Módulo 2 (Gestão, Perfil e Parceiros - Caio):
-* Histórico de pedidos e vouchers digitais ativos.
-* Painel de perfil do usuário e métricas acumuladas de sustentabilidade.
-* Painel de controle do lojista parceiro para cadastro de novas sacolas do dia.
+1. **Meus Pedidos & Acompanhamento:**
+   * Card destacado com pedido ativo do dia e cronômetro regressivo de retirada ao vivo.
+   * Histórico detalhado de resgates concluídos com cálculo de dinheiro economizado e refeições salvas.
+   * Alternador dinâmico de abas entre "Em Andamento" e "Histórico".
+2. **Voucher Digital Autenticado:**
+   * Modal seguro com código de resgate no balcão (#SF-XXXX) e QR code estilizado.
+   * Botão de confirmação de resgate com atualização de status e sincronização automática.
+3. **Perfil & Painel de Impacto Verde:**
+   * Contadores ecológicos acumulados (refeições salvas, R$ economizados, kg de CO₂e evitados, litros de água poupados).
+   * Sistema de gamificação com níveis ecológicos (ex: "Guardião da Comida") e barra de progresso.
+   * Grid de medalhas de conquista e seleção interativa de preferências alimentares.
+4. **Portal do Estabelecimento Parceiro:**
+   * Dashboard comercial com métricas do dia (sacolas reservadas, receita resgatada, comida salva e nota média).
+   * Formulário completo para cadastro de sacolas excedentes com cálculo dinâmico de desconto.
+   * Ferramenta de validação de vouchers digitais com feedback instantâneo e histórico de clientes atendidos.
 
 ---
+
+## 📸 Demonstração Visual do Aplicativo
+
+### 🛒 1. Descoberta & Detalhes da Sacola Surpresa
+Navegue pelo feed geolocalizado, localize estabelecimentos em radar no mapa e veja todas as informações da sacola surpresa antes de reservar:
+
+<p align="center">
+  <img src="./assets/screenshots/01-explorar-feed.png" width="240" alt="Feed de Sacolas" />
+  &nbsp;&nbsp;
+  <img src="./assets/screenshots/02-explorar-mapa.png" width="240" alt="Mapa Interativo" />
+  &nbsp;&nbsp;
+  <img src="./assets/screenshots/03-detalhes-sacola.png" width="240" alt="Detalhes da Sacola" />
+</p>
+
+| Feed de Oportunidades | Mapa em Tempo Real | Detalhes & Regras |
+| :---: | :---: | :---: |
+| Sacolas do dia com até 70% OFF, filtros e busca. | Radar com pins de preços e card de seleção rápida. | Fotos, horários de coleta, conceito e botão de reserva. |
+
+---
+
+### 💳 2. Checkout, Confirmação & Acompanhamento
+Simulação de compra rápida por Pix ou Cartão, geração de código de resgate e contagem regressiva para retirada:
+
+<p align="center">
+  <img src="./assets/screenshots/04-checkout.png" width="240" alt="Revisão e Pagamento" />
+  &nbsp;&nbsp;
+  <img src="./assets/screenshots/05-confirmacao-pedido.png" width="240" alt="Reserva Confirmada" />
+  &nbsp;&nbsp;
+  <img src="./assets/screenshots/06-pedidos-ativo.png" width="240" alt="Pedidos Ativos" />
+</p>
+
+| Checkout & Pagamento | Confirmação da Reserva | Acompanhamento do Pedido |
+| :---: | :---: | :---: |
+| Seletor de quantidade, impacto de CO₂ e Pix/Cartão. | Recibo digital com código único gerado (#SF-XXXX). | Cronômetro ao vivo até a retirada e resumo financeiro. |
+
+---
+
+### 🌿 3. Resgate no Balcão, Métricas Verdes & Portal do Lojista
+Apresentação do voucher autenticado, painel de sustentabilidade do consumidor e gestão completa para comerciantes parceiros:
+
+<p align="center">
+  <img src="./assets/screenshots/07-voucher-modal.png" width="240" alt="Voucher de Retirada" />
+  &nbsp;&nbsp;
+  <img src="./assets/screenshots/08-perfil-impacto.png" width="240" alt="Perfil & Impacto" />
+  &nbsp;&nbsp;
+  <img src="./assets/screenshots/09-painel-parceiro.png" width="240" alt="Painel do Comerciante" />
+</p>
+
+| Voucher Digital no Balcão | Perfil & Impacto Verde | Painel do Estabelecimento |
+| :---: | :---: | :---: |
+| Código de resgate e botão de confirmação de entrega. | Nível ecológico, CO₂ evitado e medalhas de combate ao desperdício. | Métricas financeiras, cadastro de sacolas e validador de vouchers. |
 
 ## 🛠️ Tecnologias Utilizadas
 * **React Native** (v0.86)
