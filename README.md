@@ -6,7 +6,7 @@ Aplicativo mobile híbrido desenvolvido com **React Native** e **Expo**, inspira
 
 ## 👥 Integrantes da Dupla
 * **Yago Jardim**
-* **Caio**
+* **Caio Cezar**
 
 ---
 
