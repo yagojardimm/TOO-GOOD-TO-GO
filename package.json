@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "savefood",
   "version": "1.0.0",
   "main": "expo-router/entry",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.24",
     "expo-linking": "~57.0.13",
     "expo-router": "~57.0.29",
