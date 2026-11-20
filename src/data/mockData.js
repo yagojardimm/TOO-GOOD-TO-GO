@@ -5,6 +5,7 @@ export const CATEGORIES = [
   { id: 'market', label: 'Mercados', icon: 'shopping-cart' },
   { id: 'sweets', label: 'Doces & Bolos', icon: 'gift' },
   { id: 'vegan', label: 'Vegano', icon: 'feather' },
+  { id: 'cafes', label: 'Cafeterias', icon: 'shopping-bag' },
 ];
 
 export const MOCK_BAGS = [
@@ -158,6 +159,56 @@ export const MOCK_BAGS = [
       'Retirada rápida no caixa de atendimento',
     ],
   },
+  {
+    id: 'bag-7',
+    storeName: 'Cafeteria Grão & Prosa',
+    storeAvatar: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150&auto=format&fit=crop&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&auto=format&fit=crop&q=80',
+    category: 'cafes',
+    categoryLabel: 'Cafeteria Especial',
+    rating: 4.9,
+    reviewsCount: 152,
+    distance: '1.1 km',
+    address: 'Rua dos Pinheiros, 710 - Pinheiros, São Paulo',
+    coordinates: { latitude: -23.5665, longitude: -46.6822 },
+    bagTitle: 'Combo Café da Tarde Surpresa',
+    bagDescription: 'Cookies artesanais, pão de queijo recheado, fatia de bolo caseiro e sanduíche natural preparados no dia.',
+    originalPrice: 46.0,
+    price: 16.9,
+    discountPercentage: 63,
+    pickupWindow: 'Hoje das 17h30 às 19h00',
+    remainingItems: 3,
+    pickupRules: [
+      'Retirada direta no balcão da cafeteria',
+      'Itens embalados individualmente',
+      'Apresente o código do voucher pelo app',
+    ],
+  },
+  {
+    id: 'bag-8',
+    storeName: 'Empório & Mercado Bom Preço',
+    storeAvatar: 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?w=150&auto=format&fit=crop&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?w=800&auto=format&fit=crop&q=80',
+    category: 'market',
+    categoryLabel: 'Mercearia & Hortifruti',
+    rating: 4.6,
+    reviewsCount: 88,
+    distance: '1.5 km',
+    address: 'Av. Paulista, 2100 - Bela Vista, São Paulo',
+    coordinates: { latitude: -23.5582, longitude: -46.6603 },
+    bagTitle: 'Sacola Econômica de Mercearia',
+    bagDescription: 'Produtos de padaria, laticínios próximos ao vencimento e frutas selecionadas em ótimo estado para consumo.',
+    originalPrice: 55.0,
+    price: 18.5,
+    discountPercentage: 66,
+    pickupWindow: 'Hoje das 19h30 às 21h00',
+    remainingItems: 5,
+    pickupRules: [
+      'Leve sua ecobag para transportar os produtos',
+      'Confira a validade dos itens refrigerados ao chegar em casa',
+      'Valide o pedido no caixa preferencial',
+    ],
+  },
 ];
 
 export const MOCK_ORDERS = [
@@ -281,5 +332,21 @@ export const MOCK_USER_IMPACT = {
     },
   ],
 };
+
+export const MOCK_ADDRESSES = [
+  {
+    id: 'addr-1',
+    label: 'Casa',
+    cep: '01310-100',
+    logradouro: 'Av. Paulista',
+    numero: '1578',
+    complemento: 'Apto 42',
+    bairro: 'Bela Vista',
+    cidade: 'São Paulo',
+    uf: 'SP',
+    isDefault: true,
+  },
+];
+
 
 
