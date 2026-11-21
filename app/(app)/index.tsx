@@ -1,15 +1,19 @@
-﻿import React from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import BagCard from '../../src/components/BagCard';
+import { CATEGORIES } from '../../src/data/mockData';
 import { useApp, BagItem } from '../../src/contexts/AppContext';
 import { useAuth } from '../../src/contexts/AuthContext';
 
@@ -20,10 +24,27 @@ export default function ExploreRoute() {
   const { user } = useAuth();
   const { bags, addresses, isLoadingData } = useApp();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
   const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
   const locationText = defaultAddress
     ? `${defaultAddress.bairro}, ${defaultAddress.cidade}`
     : 'São Paulo, SP';
+
+  const filteredBags = useMemo(() => {
+    const term = searchQuery.trim().toLowerCase();
+    return bags.filter((bag) => {
+      const matchesCat =
+        selectedCategory === 'all' || bag.category === selectedCategory;
+      const matchesSearch =
+        !term ||
+        bag.storeName.toLowerCase().includes(term) ||
+        bag.bagTitle.toLowerCase().includes(term) ||
+        bag.categoryLabel.toLowerCase().includes(term);
+      return matchesCat && matchesSearch;
+    });
+  }, [bags, searchQuery, selectedCategory]);
 
   function handleOpenBag(bag: BagItem) {
     router.push(`/(app)/${bag.id}`);
@@ -49,6 +70,53 @@ export default function ExploreRoute() {
             <Text style={styles.brandBadgeText}>SaveFood</Text>
           </View>
         </View>
+
+        <View style={styles.searchBox}>
+          <Feather name="search" size={17} color="#64748b" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar padarias, mercados, doces..."
+            placeholderTextColor="#94a3b8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 ? (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Feather name="x-circle" size={17} color="#94a3b8" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesRow}
+        >
+          {CATEGORIES.map((cat) => {
+            const active = selectedCategory === cat.id;
+            return (
+              <TouchableOpacity
+                key={cat.id}
+                style={[styles.categoryChip, active && styles.categoryChipActive]}
+                onPress={() => setSelectedCategory(cat.id)}
+              >
+                <Feather
+                  name={cat.icon as any}
+                  size={14}
+                  color={active ? '#ffffff' : '#475569'}
+                />
+                <Text
+                  style={[
+                    styles.categoryChipText,
+                    active && styles.categoryChipTextActive,
+                  ]}
+                >
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {isLoadingData ? (
@@ -58,14 +126,16 @@ export default function ExploreRoute() {
         </View>
       ) : (
         <FlatList
-          data={bags}
+          data={filteredBags}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Sacolas surpresa hoje</Text>
-              <Text style={styles.sectionCount}>{bags.length} opções</Text>
+              <Text style={styles.sectionCount}>
+                {filteredBags.length} {filteredBags.length === 1 ? 'opção' : 'opções'}
+              </Text>
             </View>
           }
           renderItem={({ item }) => (
@@ -73,11 +143,22 @@ export default function ExploreRoute() {
           )}
           ListEmptyComponent={
             <View style={styles.centerBox}>
-              <Feather name="shopping-bag" size={36} color="#94a3b8" />
-              <Text style={styles.emptyTitle}>Nenhuma sacola disponível</Text>
+              <Feather name="search" size={34} color="#94a3b8" />
+              <Text style={styles.emptyTitle}>Nenhuma sacola encontrada</Text>
               <Text style={styles.emptySubtitle}>
-                Volte mais tarde para conferir novas ofertas na sua região.
+                Tente buscar por outro termo ou limpar os filtros ativos.
               </Text>
+              {(searchQuery || selectedCategory !== 'all') && (
+                <TouchableOpacity
+                  style={styles.clearFilterBtn}
+                  onPress={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                  }}
+                >
+                  <Text style={styles.clearFilterText}>Limpar filtros</Text>
+                </TouchableOpacity>
+              )}
             </View>
           }
         />
@@ -130,6 +211,58 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   brandBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#059669',
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 44,
+    marginTop: 14,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#0f172a',
+  },
+  categoriesRow: {
+    gap: 8,
+    paddingTop: 12,
+    paddingBottom: 2,
+  },
+  categoryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  categoryChipActive: {
+    backgroundColor: '#059669',
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  categoryChipTextActive: {
+    color: '#ffffff',
+  },
+  clearFilterBtn: {
+    marginTop: 14,
+    backgroundColor: '#ecfdf5',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  clearFilterText: {
     fontSize: 13,
     fontWeight: '700',
     color: '#059669',
