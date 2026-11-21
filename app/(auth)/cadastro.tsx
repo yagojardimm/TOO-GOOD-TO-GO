@@ -12,9 +12,11 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useAuth } from '../../src/contexts/AuthContext';
 
 export default function CadastroScreen() {
   const router = useRouter();
+  const { signUp } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -60,10 +62,21 @@ export default function CadastroScreen() {
     if (!validateForm()) return;
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      router.replace('/(auth)/login');
-    }, 300);
+    const result = await signUp({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      password,
+      role,
+    });
+    setSubmitting(false);
+
+    if (!result.ok) {
+      setErrorMsg(result.error || 'Não foi possível concluir o cadastro.');
+      return;
+    }
+
+    router.replace('/(app)');
   }
 
   return (
