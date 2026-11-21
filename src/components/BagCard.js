@@ -1,8 +1,13 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 
-export default function BagCard({ bag, onPress }) {
+export default function BagCard({
+  bag,
+  onPress,
+  isFavorite = false,
+  onToggleFavorite,
+}) {
   return (
     <TouchableOpacity
       style={styles.card}
@@ -22,6 +27,23 @@ export default function BagCard({ bag, onPress }) {
           <Feather name="zap" size={12} color="#ffffff" style={styles.zapIcon} />
           <Text style={styles.remainingText}>Apenas {bag.remainingItems} restantes</Text>
         </View>
+
+        {onToggleFavorite ? (
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={(e) => {
+              if (e && e.stopPropagation) e.stopPropagation();
+              onToggleFavorite(bag);
+            }}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={18}
+              color={isFavorite ? '#ef4444' : '#334155'}
+            />
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <View style={styles.body}>
@@ -121,6 +143,18 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 11,
     fontWeight: '700',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
   },
   body: {
     padding: 16,

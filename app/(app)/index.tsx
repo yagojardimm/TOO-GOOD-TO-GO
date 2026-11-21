@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -22,7 +22,7 @@ export const ITEMS: Array<{ id: string; nome: string; preco: string; descricao: 
 export default function ExploreRoute() {
   const router = useRouter();
   const { user } = useAuth();
-  const { bags, addresses, isLoadingData } = useApp();
+  const { bags, addresses, isLoadingData, isFavorite, toggleFavorite } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -139,7 +139,12 @@ export default function ExploreRoute() {
             </View>
           }
           renderItem={({ item }) => (
-            <BagCard bag={item} onPress={() => handleOpenBag(item)} />
+            <BagCard
+              bag={item}
+              onPress={() => handleOpenBag(item)}
+              isFavorite={isFavorite(item.id)}
+              onToggleFavorite={() => toggleFavorite(item.id)}
+            />
           )}
           ListEmptyComponent={
             <View style={styles.centerBox}>
