@@ -18,8 +18,6 @@ import { CATEGORIES } from '../../src/data/mockData';
 import { useApp, BagItem } from '../../src/contexts/AppContext';
 import { useAuth } from '../../src/contexts/AuthContext';
 
-export const ITEMS: Array<{ id: string; nome: string; preco: string; descricao: string }> = [];
-
 export default function ExploreRoute() {
   const router = useRouter();
   const { user } = useAuth();
