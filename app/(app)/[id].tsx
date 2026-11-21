@@ -133,6 +133,55 @@ export default function BagDetailRoute() {
             <Text style={styles.sectionTitle}>O que pode vir na sacola?</Text>
             <Text style={styles.description}>{bag.bagDescription}</Text>
           </View>
+
+          <View style={styles.sectionBox}>
+            <Text style={styles.sectionTitle}>Avaliações da comunidade</Text>
+            <View style={styles.reviewsHeader}>
+              <View style={styles.reviewsScoreBox}>
+                <Text style={styles.reviewsBigScore}>{bag.rating.toFixed(1)}</Text>
+                <View style={styles.starsRow}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Ionicons
+                      key={star}
+                      name={star <= Math.round(bag.rating) ? 'star' : 'star-outline'}
+                      size={14}
+                      color="#d97706"
+                    />
+                  ))}
+                </View>
+                <Text style={styles.reviewsCountText}>
+                  {bag.reviewsCount} avaliações
+                </Text>
+              </View>
+
+              <View style={styles.highlightsCol}>
+                <View style={styles.highlightChip}>
+                  <Feather name="check-circle" size={13} color="#059669" />
+                  <Text style={styles.highlightText}>Alimentos frescos</Text>
+                </View>
+                <View style={styles.highlightChip}>
+                  <Feather name="thumbs-up" size={13} color="#059669" />
+                  <Text style={styles.highlightText}>Ótimo custo-benefício</Text>
+                </View>
+                <View style={styles.highlightChip}>
+                  <Feather name="clock" size={13} color="#059669" />
+                  <Text style={styles.highlightText}>Retirada rápida</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {bag.pickupRules && bag.pickupRules.length > 0 ? (
+            <View style={styles.sectionBox}>
+              <Text style={styles.sectionTitle}>Regras para retirada</Text>
+              {bag.pickupRules.map((rule, index) => (
+                <View key={index} style={styles.ruleRow}>
+                  <Feather name="check" size={15} color="#059669" style={styles.ruleIcon} />
+                  <Text style={styles.ruleText}>{rule}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
       </ScrollView>
 
@@ -369,6 +418,69 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#475569',
     lineHeight: 21,
+  },
+  reviewsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  reviewsScoreBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fffbeb',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    minWidth: 108,
+  },
+  reviewsBigScore: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#92400e',
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: 2,
+    marginTop: 2,
+  },
+  reviewsCountText: {
+    fontSize: 11,
+    color: '#78716c',
+    marginTop: 4,
+    fontWeight: '600',
+  },
+  highlightsCol: {
+    flex: 1,
+    gap: 8,
+  },
+  highlightChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#f8fafc',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  highlightText: {
+    fontSize: 12,
+    color: '#334155',
+    fontWeight: '600',
+  },
+  ruleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginTop: 8,
+  },
+  ruleIcon: {
+    marginTop: 2,
+  },
+  ruleText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#475569',
+    lineHeight: 19,
   },
   bottomBar: {
     flexDirection: 'row',
