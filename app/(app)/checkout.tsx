@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   SafeAreaView,
   ScrollView,
@@ -15,13 +16,14 @@ import { useApp } from '../../src/contexts/AppContext';
 export default function CheckoutRoute() {
   const { bagId } = useLocalSearchParams<{ bagId: string }>();
   const router = useRouter();
-  const { bags, addresses } = useApp();
+  const { bags, addresses, createOrder } = useApp();
 
   const bag = bags.find((item) => item.id === String(bagId));
   const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
 
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (!bag) {
     return (
@@ -53,7 +55,24 @@ export default function CheckoutRoute() {
   }
 
   function handleConfirm() {
-    router.replace('/(app)');
+    if (!bag || isProcessing) return;
+
+    setIsProcessing(true);
+    const paymentLabel =
+      paymentMethod === 'pix' ? 'Pix Instantâneo' : 'Cartão de Crédito';
+
+    const createdOrder = createOrder(bag, quantity, paymentLabel);
+
+    setTimeout(() => {
+      setIsProcessing(false);
+      router.replace({
+        pathname: '/(app)/sucesso',
+        params: {
+          orderId: createdOrder.id,
+          voucherCode: createdOrder.voucherCode,
+        },
+      });
+    }, 350);
   }
 
   return (
@@ -231,10 +250,18 @@ export default function CheckoutRoute() {
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.confirmBtn} onPress={handleConfirm}>
-          <Text style={styles.confirmBtnText}>
-            Confirmar reserva • R$ {totalFinal.toFixed(2).replace('.', ',')}
-          </Text>
+        <TouchableOpacity
+          style={[styles.confirmBtn, isProcessing && styles.confirmBtnDisabled]}
+          onPress={handleConfirm}
+          disabled={isProcessing}
+        >
+          {isProcessing ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.confirmBtnText}>
+              Confirmar reserva • R$ {totalFinal.toFixed(2).replace('.', ',')}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -527,6 +554,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  confirmBtnDisabled: {
+    opacity: 0.7,
   },
   confirmBtnText: {
     color: '#ffffff',
