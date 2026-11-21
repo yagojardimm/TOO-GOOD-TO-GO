@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -26,6 +27,19 @@ export default function ExploreRoute() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [selectedPinId, setSelectedPinId] = useState<string | null>(null);
+
+  const PIN_POSITIONS = [
+    { top: '18%', left: '16%' },
+    { top: '28%', left: '62%' },
+    { top: '46%', left: '34%' },
+    { top: '60%', left: '68%' },
+    { top: '38%', left: '14%' },
+    { top: '70%', left: '26%' },
+    { top: '20%', left: '42%' },
+    { top: '54%', left: '50%' },
+  ];
 
   const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
   const locationText = defaultAddress
@@ -65,9 +79,50 @@ export default function ExploreRoute() {
               </Text>
             </View>
           </View>
-          <View style={styles.brandBadge}>
-            <Feather name="shopping-bag" size={16} color="#059669" />
-            <Text style={styles.brandBadgeText}>SaveFood</Text>
+          <View style={styles.viewToggle}>
+            <TouchableOpacity
+              style={[
+                styles.viewToggleBtn,
+                viewMode === 'list' && styles.viewToggleBtnActive,
+              ]}
+              onPress={() => setViewMode('list')}
+            >
+              <Feather
+                name="list"
+                size={14}
+                color={viewMode === 'list' ? '#ffffff' : '#475569'}
+              />
+              <Text
+                style={[
+                  styles.viewToggleText,
+                  viewMode === 'list' && styles.viewToggleTextActive,
+                ]}
+              >
+                Lista
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.viewToggleBtn,
+                viewMode === 'map' && styles.viewToggleBtnActive,
+              ]}
+              onPress={() => setViewMode('map')}
+            >
+              <Feather
+                name="map"
+                size={14}
+                color={viewMode === 'map' ? '#ffffff' : '#475569'}
+              />
+              <Text
+                style={[
+                  styles.viewToggleText,
+                  viewMode === 'map' && styles.viewToggleTextActive,
+                ]}
+              >
+                Mapa
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -123,6 +178,92 @@ export default function ExploreRoute() {
         <View style={styles.centerBox}>
           <ActivityIndicator size="large" color="#059669" />
           <Text style={styles.loadingText}>Carregando sacolas disponíveis...</Text>
+        </View>
+      ) : viewMode === 'map' ? (
+        <View style={styles.mapContainer}>
+          <View style={styles.mapCanvas}>
+            <View style={styles.radarOuter} />
+            <View style={styles.radarInner} />
+            <View style={styles.userDot} />
+
+            {filteredBags.map((bag, index) => {
+              const pos = PIN_POSITIONS[index % PIN_POSITIONS.length];
+              const isSelected =
+                (selectedPinId || filteredBags[0]?.id) === bag.id;
+
+              return (
+                <TouchableOpacity
+                  key={bag.id}
+                  style={[
+                    styles.mapPin,
+                    { top: pos.top as any, left: pos.left as any },
+                    isSelected && styles.mapPinActive,
+                  ]}
+                  onPress={() => setSelectedPinId(bag.id)}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.mapPinText,
+                      isSelected && styles.mapPinTextActive,
+                    ]}
+                  >
+                    R$ {bag.price.toFixed(0)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {(() => {
+            const activeBag =
+              filteredBags.find((b) => b.id === selectedPinId) ||
+              filteredBags[0];
+
+            if (!activeBag) {
+              return (
+                <View style={styles.mapEmptyCard}>
+                  <Text style={styles.emptyTitle}>Nenhuma loja no mapa</Text>
+                  <Text style={styles.emptySubtitle}>
+                    Altere os filtros para visualizar sacolas próximas.
+                  </Text>
+                </View>
+              );
+            }
+
+            return (
+              <TouchableOpacity
+                style={styles.mapPreviewCard}
+                onPress={() => handleOpenBag(activeBag)}
+                activeOpacity={0.9}
+              >
+                <Image
+                  source={{ uri: activeBag.coverImage }}
+                  style={styles.mapPreviewImg}
+                />
+                <View style={styles.mapPreviewInfo}>
+                  <Text style={styles.mapPreviewStore} numberOfLines={1}>
+                    {activeBag.storeName}
+                  </Text>
+                  <Text style={styles.mapPreviewBag} numberOfLines={1}>
+                    {activeBag.bagTitle}
+                  </Text>
+                  <Text style={styles.mapPreviewWindow} numberOfLines={1}>
+                    {activeBag.pickupWindow} • {activeBag.distance}
+                  </Text>
+                  <View style={styles.mapPreviewBottom}>
+                    <Text style={styles.mapPreviewPrice}>
+                      R$ {activeBag.price.toFixed(2).replace('.', ',')}
+                    </Text>
+                    <View style={styles.mapPreviewCta}>
+                      <Text style={styles.mapPreviewCtaText}>Ver detalhes</Text>
+                      <Feather name="chevron-right" size={14} color="#059669" />
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          })()}
         </View>
       ) : (
         <FlatList
@@ -206,19 +347,162 @@ const styles = StyleSheet.create({
     color: '#475569',
     maxWidth: 210,
   },
-  brandBadge: {
+  viewToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    padding: 3,
+    gap: 2,
+  },
+  viewToggleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#ecfdf5',
-    paddingHorizontal: 12,
+    gap: 4,
+    paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 9,
   },
-  brandBadgeText: {
+  viewToggleBtnActive: {
+    backgroundColor: '#059669',
+  },
+  viewToggleText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  viewToggleTextActive: {
+    color: '#ffffff',
+  },
+  mapContainer: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'space-between',
+  },
+  mapCanvas: {
+    flex: 1,
+    backgroundColor: '#e2f1ec',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    marginBottom: 14,
+  },
+  radarOuter: {
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    borderWidth: 1,
+    borderColor: 'rgba(5, 150, 105, 0.22)',
+    backgroundColor: 'rgba(5, 150, 105, 0.05)',
+  },
+  radarInner: {
+    position: 'absolute',
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 1,
+    borderColor: 'rgba(5, 150, 105, 0.35)',
+    backgroundColor: 'rgba(5, 150, 105, 0.08)',
+  },
+  userDot: {
+    position: 'absolute',
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#2563eb',
+    borderWidth: 3,
+    borderColor: '#ffffff',
+  },
+  mapPin: {
+    position: 'absolute',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#059669',
+    elevation: 3,
+  },
+  mapPinActive: {
+    backgroundColor: '#059669',
+    transform: [{ scale: 1.08 }],
+  },
+  mapPinText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#059669',
+  },
+  mapPinTextActive: {
+    color: '#ffffff',
+  },
+  mapPreviewCard: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    gap: 12,
+    elevation: 3,
+  },
+  mapPreviewImg: {
+    width: 84,
+    height: 84,
+    borderRadius: 12,
+    backgroundColor: '#e2e8f0',
+  },
+  mapPreviewInfo: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  mapPreviewStore: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  mapPreviewBag: {
     fontSize: 13,
+    color: '#334155',
+    fontWeight: '600',
+  },
+  mapPreviewWindow: {
+    fontSize: 12,
+    color: '#64748b',
+  },
+  mapPreviewBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  mapPreviewPrice: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#059669',
+  },
+  mapPreviewCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ecfdf5',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  mapPreviewCtaText: {
+    fontSize: 12,
     fontWeight: '700',
     color: '#059669',
+  },
+  mapEmptyCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 18,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   searchBox: {
     flexDirection: 'row',
