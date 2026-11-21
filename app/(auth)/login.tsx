@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,14 +15,22 @@ import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../../src/contexts/AuthContext';
 
 export default function LoginScreen() {
-  const { signIn } = useAuth();
+  const { signIn, savedEmail } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberEmail, setRememberEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberEmail(true);
+    }
+  }, [savedEmail]);
 
   async function handleLogin() {
     setErrorMsg('');
@@ -39,7 +47,7 @@ export default function LoginScreen() {
     }
 
     setSubmitting(true);
-    const result = await signIn(cleanEmail, password);
+    const result = await signIn(cleanEmail, password, rememberEmail);
     setSubmitting(false);
 
     if (!result.ok) {
@@ -114,12 +122,26 @@ export default function LoginScreen() {
             </View>
           ) : null}
 
-          <TouchableOpacity
-            style={styles.forgotLink}
-            onPress={() => router.push('/(auth)/recuperar-senha')}
-          >
-            <Text style={styles.forgotText}>Esqueci minha senha</Text>
-          </TouchableOpacity>
+          <View style={styles.optionsRow}>
+            <TouchableOpacity
+              style={styles.rememberRow}
+              onPress={() => setRememberEmail((prev) => !prev)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, rememberEmail && styles.checkboxActive]}>
+                {rememberEmail ? (
+                  <Feather name="check" size={13} color="#ffffff" />
+                ) : null}
+              </View>
+              <Text style={styles.rememberText}>Lembrar meu e-mail</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(auth)/recuperar-senha')}
+            >
+              <Text style={styles.forgotText}>Esqueci minha senha</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
             style={[styles.primaryBtn, submitting && styles.primaryBtnDisabled]}
@@ -229,10 +251,35 @@ const styles = StyleSheet.create({
     color: '#dc2626',
     flex: 1,
   },
-  forgotLink: {
-    alignSelf: 'flex-end',
-    marginTop: 12,
+  optionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 14,
     marginBottom: 18,
+  },
+  rememberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#cbd5e1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+  },
+  checkboxActive: {
+    backgroundColor: '#059669',
+    borderColor: '#059669',
+  },
+  rememberText: {
+    fontSize: 13,
+    color: '#475569',
   },
   forgotText: {
     fontSize: 13,
