@@ -224,6 +224,48 @@ export default function ProfileScreen() {
           ) : null}
         </View>
 
+        {/* SEÇÃO DE PREFERÊNCIAS ALIMENTARES */}
+        <View style={styles.sectionCard}>
+          <View style={styles.sectionHeaderRow}>
+            <Feather name="sliders" size={18} color="#059669" />
+            <Text style={styles.sectionCardTitle}>Preferências Alimentares</Text>
+          </View>
+          <Text style={styles.sectionCardSubtitle}>
+            Personalize as sugestões de sacolas surpresa no seu feed
+          </Text>
+
+          <View style={styles.prefsContainer}>
+            {PREFERENCE_OPTIONS.map((item) => {
+              const active = preferences.includes(item);
+              return (
+                <TouchableOpacity
+                  key={item}
+                  style={[styles.prefChip, active && styles.prefChipActive]}
+                  onPress={() => togglePreference(item)}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.prefChipText,
+                      active && styles.prefChipTextActive,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                  {active ? (
+                    <Feather
+                      name="check"
+                      size={14}
+                      color="#ffffff"
+                      style={{ marginLeft: 6 }}
+                    />
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         {/* ATALHOS DE NAVEGAÇÃO */}
         <View style={styles.menuSection}>
           <TouchableOpacity
