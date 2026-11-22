@@ -175,7 +175,16 @@ export default function ParceiroScreen() {
           </Text>
         </TouchableOpacity>
 
-
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'validate' && styles.tabActive]}
+          onPress={() => setActiveTab('validate')}
+        >
+          <Text
+            style={[styles.tabText, activeTab === 'validate' && styles.tabTextActive]}
+          >
+            Validar Voucher
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView
@@ -393,7 +402,93 @@ export default function ParceiroScreen() {
             </View>
           ) : null}
 
-          </ScrollView>
+          {/* TAB 3: VALIDAR VOUCHER */}
+          {activeTab === 'validate' ? (
+            <View style={styles.formCard}>
+              <Text style={styles.formTitle}>Validação de Voucher no Balcão</Text>
+              <Text style={styles.formSubtitle}>
+                Digite o código apresentado pelo cliente para dar baixa no pedido
+              </Text>
+
+              <View style={styles.voucherInputRow}>
+                <TextInput
+                  style={styles.voucherInput}
+                  value={voucherCodeInput}
+                  onChangeText={(val) => setVoucherCodeInput(val.toUpperCase())}
+                  placeholder="Ex: SF-1234"
+                  placeholderTextColor="#94a3b8"
+                  autoCapitalize="characters"
+                />
+                <TouchableOpacity
+                  style={styles.validateBtn}
+                  onPress={handleValidarVoucher}
+                  activeOpacity={0.85}
+                >
+                  <Feather name="check" size={18} color="#ffffff" style={{ marginRight: 4 }} />
+                  <Text style={styles.validateBtnText}>Validar</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Feedback de Validação */}
+              {validationResult ? (
+                <View
+                  style={[
+                    styles.resultCard,
+                    validationResult.status === 'success'
+                      ? styles.resultSuccess
+                      : styles.resultError,
+                  ]}
+                >
+                  <View style={styles.resultHeader}>
+                    <Feather
+                      name={
+                        validationResult.status === 'success'
+                          ? 'check-circle'
+                          : 'x-circle'
+                      }
+                      size={20}
+                      color={
+                        validationResult.status === 'success'
+                          ? '#059669'
+                          : '#ef4444'
+                      }
+                    />
+                    <Text
+                      style={[
+                        styles.resultTitle,
+                        validationResult.status === 'success'
+                          ? styles.resultTitleSuccess
+                          : styles.resultTitleError,
+                      ]}
+                    >
+                      {validationResult.status === 'success'
+                        ? 'Resgate Confirmado!'
+                        : 'Voucher Não Válido'}
+                    </Text>
+                  </View>
+
+                  <Text style={styles.resultMessage}>
+                    {validationResult.message}
+                  </Text>
+
+                  {validationResult.orderInfo ? (
+                    <View style={styles.orderInfoBox}>
+                      <Text style={styles.orderInfoTitle}>
+                        {validationResult.orderInfo.bagTitle}
+                      </Text>
+                      <Text style={styles.orderInfoStore}>
+                        {validationResult.orderInfo.storeName}
+                      </Text>
+                      <Text style={styles.orderInfoDate}>
+                        Retirada: {validationResult.orderInfo.date || 'Hoje'}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
