@@ -33,7 +33,10 @@ export default function FavoritosScreen() {
               : `${favoriteBags.length} sacolas salvas para acompanhar`}
           </Text>
         </View>
-        
+        <View style={styles.badgeCount}>
+          <Ionicons name="heart" size={18} color="#ef4444" />
+          <Text style={styles.badgeCountText}>{favoriteBags.length}</Text>
+        </View>
       </View>
 
       <FlatList
@@ -45,6 +48,8 @@ export default function FavoritosScreen() {
           <BagCard
             bag={item}
             isFavorite={true}
+            onToggleFavorite={() => toggleFavorite(item.id)}
+            onPress={() => router.push(`/(app)/${item.id}`)}
           />
         )}
         ListEmptyComponent={
@@ -57,7 +62,14 @@ export default function FavoritosScreen() {
               Toque no coração das sacolas que você mais gosta no feed para
               acompanhar a disponibilidade e resgatar antes que acabem!
             </Text>
-            
+            <TouchableOpacity
+              style={styles.exploreButton}
+              onPress={() => router.push('/(app)')}
+              activeOpacity={0.85}
+            >
+              <Feather name="compass" size={18} color="#ffffff" style={styles.buttonIcon} />
+              <Text style={styles.exploreButtonText}>Explorar sacolas</Text>
+            </TouchableOpacity>
           </View>
         }
       />
