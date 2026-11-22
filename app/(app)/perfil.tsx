@@ -122,6 +122,108 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* PAINEL DE SUSTENTABILIDADE & IMPACTO VERDE */}
+        <View style={styles.impactCard}>
+          <View style={styles.impactCardHeader}>
+            <View style={styles.impactHeaderIcon}>
+              <Feather name="globe" size={18} color="#059669" />
+            </View>
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.impactTitle}>Impacto Ecológico</Text>
+              <Text style={styles.impactSubtitle}>
+                {impact.levelTitle} • Nível {impact.currentLevel}
+              </Text>
+            </View>
+          </View>
+
+          {/* Barra de Progresso do Nível */}
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${levelProgress}%` }]} />
+            </View>
+            <View style={styles.progressLabels}>
+              <Text style={styles.progressText}>
+                {impact.mealsSaved} de {impact.nextLevelMeals} refeições salvas
+              </Text>
+              <Text style={styles.progressPercent}>{levelProgress}%</Text>
+            </View>
+          </View>
+
+          {/* Métricas Principais em Grade 2x2 */}
+          <View style={styles.metricsGrid}>
+            <View style={styles.metricItem}>
+              <Feather name="check-circle" size={18} color="#059669" />
+              <Text style={styles.metricValue}>{impact.mealsSaved}</Text>
+              <Text style={styles.metricLabel}>Refeições Salvas</Text>
+            </View>
+
+            <View style={styles.metricItem}>
+              <Feather name="trending-up" size={18} color="#059669" />
+              <Text style={styles.metricValue}>
+                R$ {impact.moneySaved.toFixed(2).replace('.', ',')}
+              </Text>
+              <Text style={styles.metricLabel}>Economizados</Text>
+            </View>
+
+            <View style={styles.metricItem}>
+              <Feather name="wind" size={18} color="#059669" />
+              <Text style={styles.metricValue}>
+                {String(impact.co2SavedKg).replace('.', ',')} kg
+              </Text>
+              <Text style={styles.metricLabel}>CO₂e Evitados</Text>
+            </View>
+
+            <View style={styles.metricItem}>
+              <Ionicons name="water-outline" size={18} color="#059669" />
+              <Text style={styles.metricValue}>{impact.waterSavedLiters} L</Text>
+              <Text style={styles.metricLabel}>Água Poupada</Text>
+            </View>
+          </View>
+
+          {/* Medalhas de Conquista */}
+          {impact.badges && impact.badges.length > 0 ? (
+            <View style={styles.badgesSection}>
+              <Text style={styles.badgesTitle}>Medalhas e Conquistas</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.badgesScroll}
+              >
+                {impact.badges.map((b) => (
+                  <View
+                    key={b.id}
+                    style={[
+                      styles.badgeCard,
+                      !b.unlocked && styles.badgeCardLocked,
+                    ]}
+                  >
+                    <Feather
+                      name={b.unlocked ? (b.icon as any) : 'lock'}
+                      size={22}
+                      color={b.unlocked ? '#059669' : '#94a3b8'}
+                    />
+                    <Text
+                      style={[
+                        styles.badgeName,
+                        !b.unlocked && styles.badgeNameLocked,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {b.title}
+                    </Text>
+                    <Text
+                      style={styles.badgeDesc}
+                      numberOfLines={2}
+                    >
+                      {b.desc}
+                    </Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
+        </View>
+
         {/* ATALHOS DE NAVEGAÇÃO */}
         <View style={styles.menuSection}>
           <TouchableOpacity
