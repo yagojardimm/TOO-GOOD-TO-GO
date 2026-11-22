@@ -164,6 +164,17 @@ export default function ParceiroScreen() {
           </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'new_bag' && styles.tabActive]}
+          onPress={() => setActiveTab('new_bag')}
+        >
+          <Text
+            style={[styles.tabText, activeTab === 'new_bag' && styles.tabTextActive]}
+          >
+            + Nova Sacola
+          </Text>
+        </TouchableOpacity>
+
 
       </View>
 
@@ -251,7 +262,138 @@ export default function ParceiroScreen() {
             </View>
           ) : null}
 
-</ScrollView>
+          {/* TAB 2: FORMULÁRIO DE NOVA SACOLA */}
+          {activeTab === 'new_bag' ? (
+            <View style={styles.formCard}>
+              <Text style={styles.formTitle}>Cadastrar Nova Sacola Surpresa</Text>
+              <Text style={styles.formSubtitle}>
+                Preencha os dados e ela aparecerá na Home imediatamente
+              </Text>
+
+              <Text style={styles.inputLabel}>Nome do Estabelecimento</Text>
+              <TextInput
+                style={styles.input}
+                value={storeName}
+                onChangeText={setStoreName}
+                placeholder="Ex: Padaria Bella Vista"
+                placeholderTextColor="#94a3b8"
+              />
+
+              <Text style={styles.inputLabel}>Título da Sacola *</Text>
+              <TextInput
+                style={styles.input}
+                value={bagTitle}
+                onChangeText={setBagTitle}
+                placeholder="Ex: Sacola Surpresa de Pães & Doces"
+                placeholderTextColor="#94a3b8"
+              />
+
+              <Text style={styles.inputLabel}>Categoria</Text>
+              <View style={styles.categoriesRow}>
+                {CATEGORIES.map((c) => (
+                  <TouchableOpacity
+                    key={c.id}
+                    style={[
+                      styles.categoryChip,
+                      category === c.id && styles.categoryChipActive,
+                    ]}
+                    onPress={() => setCategory(c.id)}
+                  >
+                    <Text
+                      style={[
+                        styles.categoryChipText,
+                        category === c.id && styles.categoryChipTextActive,
+                      ]}
+                    >
+                      {c.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Preços e Desconto Automático */}
+              <View style={styles.rowTwoCols}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <Text style={styles.inputLabel}>Preço Original (R$)</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={originalPrice}
+                    onChangeText={setOriginalPrice}
+                    keyboardType="numeric"
+                    placeholder="50.00"
+                    placeholderTextColor="#94a3b8"
+                  />
+                </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <Text style={styles.inputLabel}>Preço Promocional (R$)</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={price}
+                    onChangeText={setPrice}
+                    keyboardType="numeric"
+                    placeholder="18.90"
+                    placeholderTextColor="#94a3b8"
+                  />
+                </View>
+              </View>
+
+              {discountPercent > 0 ? (
+                <View style={styles.discountPreview}>
+                  <Feather name="tag" size={16} color="#059669" />
+                  <Text style={styles.discountPreviewText}>
+                    Desconto calculado: {discountPercent}% OFF
+                  </Text>
+                </View>
+              ) : null}
+
+              {/* Horário de Retirada e Quantidade */}
+              <View style={styles.rowTwoCols}>
+                <View style={{ flex: 2, marginRight: 8 }}>
+                  <Text style={styles.inputLabel}>Janela de Retirada</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={pickupWindow}
+                    onChangeText={setPickupWindow}
+                    placeholder="Hoje das 18h30 às 20h00"
+                    placeholderTextColor="#94a3b8"
+                  />
+                </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <Text style={styles.inputLabel}>Quantidade</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={quantity}
+                    onChangeText={setQuantity}
+                    keyboardType="numeric"
+                    placeholder="3"
+                    placeholderTextColor="#94a3b8"
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.inputLabel}>Descrição</Text>
+              <TextInput
+                style={[styles.input, { height: 70, textAlignVertical: 'top' }]}
+                value={description}
+                onChangeText={setDescription}
+                multiline
+                numberOfLines={3}
+                placeholder="Ex: Pode conter pães frescos, croissants..."
+                placeholderTextColor="#94a3b8"
+              />
+
+              <TouchableOpacity
+                style={styles.submitBtn}
+                onPress={handleCadastrarSacola}
+                activeOpacity={0.85}
+              >
+                <Feather name="plus-circle" size={18} color="#ffffff" style={{ marginRight: 8 }} />
+                <Text style={styles.submitBtnText}>Cadastrar Sacola Surpresa</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+
+          </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
