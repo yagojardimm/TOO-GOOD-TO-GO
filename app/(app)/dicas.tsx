@@ -83,7 +83,61 @@ export default function DicasScreen() {
         </View>
       </View>
 
+      {/* Barra de Pesquisa */}
+      <View style={styles.searchBarContainer}>
+        <View style={styles.searchBar}>
+          <Feather name="search" size={18} color="#94a3b8" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar receita ou ingrediente..."
+            placeholderTextColor="#94a3b8"
+            value={searchText}
+            onChangeText={setSearchText}
+            onSubmitEditing={handleSearchSubmit}
+            returnKeyType="search"
+          />
+          {searchText ? (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+                handleSelectChip('Todos');
+              }}
+            >
+              <Feather name="x-circle" size={18} color="#94a3b8" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      </View>
 
+      {/* Chips Rápidos */}
+      <View style={styles.chipsContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsScroll}
+        >
+          {QUICK_CHIPS.map((chip) => (
+            <TouchableOpacity
+              key={chip}
+              style={[
+                styles.chip,
+                selectedChip === chip && styles.chipActive,
+              ]}
+              onPress={() => handleSelectChip(chip)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.chipText,
+                  selectedChip === chip && styles.chipTextActive,
+                ]}
+              >
+                {chip}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Lista de Receitas ou Estados */}
       {loading && !refreshing ? (
