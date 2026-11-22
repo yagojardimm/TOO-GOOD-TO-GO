@@ -66,6 +66,15 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
+        name="dicas"
+        options={{
+          title: 'Dicas',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="book-open" size={size - 2} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="perfil"
         options={{
           title: 'Perfil',
