@@ -40,7 +40,38 @@ export default function PedidosScreen() {
         </View>
       </View>
 
+      {/* Seletor de Abas */}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity
+          style={[styles.tabButton, activeTab === 'active' && styles.tabButtonActive]}
+          onPress={() => setActiveTab('active')}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[styles.tabText, activeTab === 'active' && styles.tabTextActive]}
+          >
+            Em andamento ({activeOrders.length})
+          </Text>
+        </TouchableOpacity>
 
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === 'completed' && styles.tabButtonActive,
+          ]}
+          onPress={() => setActiveTab('completed')}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'completed' && styles.tabTextActive,
+            ]}
+          >
+            Histórico ({pastOrders.length})
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={displayedOrders}
@@ -109,9 +140,26 @@ export default function PedidosScreen() {
                 </Text>
               </View>
 
-              <View style={styles.redeemedTag}>
-                <Text style={styles.redeemedTagText}>Reserva confirmada</Text>
-              </View>
+              {item.status === 'active' ? (
+                <TouchableOpacity
+                  style={styles.voucherButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(app)/voucher',
+                      params: { orderId: item.id },
+                    })
+                  }
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="qr-code-outline" size={16} color="#ffffff" />
+                  <Text style={styles.voucherButtonText}>Abrir voucher</Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.redeemedTag}>
+                  <Feather name="check-circle" size={14} color="#059669" />
+                  <Text style={styles.redeemedTagText}>Resgatado</Text>
+                </View>
+              )}
             </View>
           </View>
         )}
