@@ -263,7 +263,63 @@ export default function EnderecosScreen() {
             ) : null}
           </View>
 
+          {/* Lista de Endereços Salvos */}
+          <View style={styles.listSection}>
+            <Text style={styles.sectionTitle}>
+              Endereços salvos ({addresses.length})
+            </Text>
 
+            {addresses.map((item) => (
+              <View key={item.id} style={styles.addressCard}>
+                <View style={styles.addressCardTop}>
+                  <View style={styles.labelBadge}>
+                    <Ionicons
+                      name={
+                        item.label.toLowerCase() === 'casa'
+                          ? 'home-outline'
+                          : 'briefcase-outline'
+                      }
+                      size={14}
+                      color="#059669"
+                    />
+                    <Text style={styles.labelText}>{item.label}</Text>
+                  </View>
+
+                  {item.isDefault ? (
+                    <View style={styles.defaultBadge}>
+                      <Text style={styles.defaultBadgeText}>Principal</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => setDefaultAddress(item.id)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.makeDefaultText}>Definir principal</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                <Text style={styles.addressMain}>
+                  {item.logradouro}, {item.numero}
+                  {item.complemento ? ` - ${item.complemento}` : ''}
+                </Text>
+                <Text style={styles.addressSub}>
+                  {item.bairro} • {item.cidade}/{item.uf} • CEP {item.cep}
+                </Text>
+
+                <View style={styles.addressActions}>
+                  <TouchableOpacity
+                    style={styles.deleteAction}
+                    onPress={() => handleRemover(item.id, item.label)}
+                    activeOpacity={0.7}
+                  >
+                    <Feather name="trash-2" size={14} color="#ef4444" />
+                    <Text style={styles.deleteActionText}>Excluir</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
