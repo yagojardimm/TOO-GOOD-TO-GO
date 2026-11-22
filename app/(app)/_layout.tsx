@@ -93,6 +93,12 @@ export default function AppLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="voucher"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
