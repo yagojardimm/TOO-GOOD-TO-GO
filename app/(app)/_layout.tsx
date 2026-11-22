@@ -57,6 +57,15 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
+        name="pedidos"
+        options={{
+          title: 'Pedidos',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="shopping-bag" size={size - 2} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="perfil"
         options={{
           title: 'Perfil',

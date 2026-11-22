@@ -115,9 +115,9 @@ export default function SucessoRoute() {
 
         <TouchableOpacity
           style={styles.secondaryBtn}
-          onPress={() => router.replace('/(app)/perfil')}
+          onPress={() => router.replace('/(app)/pedidos')}
         >
-          <Text style={styles.secondaryBtnText}>Ir para meu perfil</Text>
+          <Text style={styles.secondaryBtnText}>Ver meus pedidos</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
