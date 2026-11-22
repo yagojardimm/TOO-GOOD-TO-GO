@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
@@ -48,6 +48,15 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
+        name="favoritos"
+        options={{
+          title: 'Favoritos',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="heart" size={size - 2} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="perfil"
         options={{
           title: 'Perfil',
@@ -56,6 +65,7 @@ export default function AppLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="[id]"
         options={{
