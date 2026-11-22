@@ -84,6 +84,7 @@ export default function AppLayout() {
         }}
       />
 
+      {/* Rotas secundárias ocultas da barra inferior */}
       <Tabs.Screen
         name="[id]"
         options={{
