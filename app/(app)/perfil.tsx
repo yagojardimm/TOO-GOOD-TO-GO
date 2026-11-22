@@ -62,11 +62,9 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleSignOut = () => {
-    Alert.alert('Sair da conta', 'Tem certeza que deseja sair?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Sair', style: 'destructive', onPress: () => signOut() },
-    ]);
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace('/(auth)/login');
   };
 
   const levelProgress = Math.min(

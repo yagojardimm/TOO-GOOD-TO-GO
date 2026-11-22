@@ -44,23 +44,10 @@ export default function VoucherScreen() {
   }
 
   const handleConfirmRedeem = () => {
-    Alert.alert(
-      'Confirmar Retirada',
-      'Você confirma que está no balcão e acabou de retirar sua sacola?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Confirmar',
-          style: 'default',
-          onPress: () => {
-            const updated = redeemOrder(order.id);
-            if (updated) {
-              setIsRedeemed(true);
-            }
-          },
-        },
-      ]
-    );
+    const updated = redeemOrder(order.id);
+    if (updated) {
+      setIsRedeemed(true);
+    }
   };
 
   return (

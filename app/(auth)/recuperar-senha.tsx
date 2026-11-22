@@ -90,7 +90,7 @@ export default function RecuperarSenhaScreen() {
                 style={styles.input}
                 placeholder="seuemail@exemplo.com"
                 placeholderTextColor="#94a3b8"
-                keyboardType="email-address"
+                autoComplete="off"
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}

@@ -87,7 +87,7 @@ export default function LoginScreen() {
               style={styles.input}
               placeholder="seuemail@exemplo.com"
               placeholderTextColor="#94a3b8"
-              keyboardType="email-address"
+              autoComplete="off"
               autoCapitalize="none"
               autoCorrect={false}
               value={email}
@@ -102,6 +102,7 @@ export default function LoginScreen() {
               style={styles.input}
               placeholder="Digite sua senha"
               placeholderTextColor="#94a3b8"
+              autoComplete="new-password"
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}

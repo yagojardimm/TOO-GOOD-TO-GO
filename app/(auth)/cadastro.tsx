@@ -149,6 +149,7 @@ export default function CadastroScreen() {
               style={styles.input}
               placeholder="Ex: Yago Jardim"
               placeholderTextColor="#94a3b8"
+              autoComplete="off"
               value={name}
               onChangeText={setName}
             />
@@ -161,7 +162,7 @@ export default function CadastroScreen() {
               style={styles.input}
               placeholder="seuemail@exemplo.com"
               placeholderTextColor="#94a3b8"
-              keyboardType="email-address"
+              autoComplete="off"
               autoCapitalize="none"
               autoCorrect={false}
               value={email}
@@ -176,6 +177,7 @@ export default function CadastroScreen() {
               style={styles.input}
               placeholder="(11) 99999-9999"
               placeholderTextColor="#94a3b8"
+              autoComplete="off"
               keyboardType="phone-pad"
               value={phone}
               onChangeText={setPhone}

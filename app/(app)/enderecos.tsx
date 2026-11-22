@@ -87,19 +87,8 @@ export default function EnderecosScreen() {
     Alert.alert('Sucesso', 'Endereço salvo com sucesso!');
   };
 
-  const handleRemover = (id: string, lbl: string) => {
-    Alert.alert(
-      'Remover endereço',
-      `Deseja realmente excluir o endereço "${lbl}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: () => removeAddress(id),
-        },
-      ]
-    );
+  const handleRemover = (id: string, _lbl?: string) => {
+    removeAddress(id);
   };
 
   return (
