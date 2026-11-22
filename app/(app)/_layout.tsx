@@ -99,6 +99,12 @@ export default function AppLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="enderecos"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
