@@ -158,13 +158,27 @@ export default function VoucherScreen() {
           </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.returnButton}
-          onPress={() => router.back()}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.returnButtonText}>Voltar</Text>
-        </TouchableOpacity>
+        {/* Botão de Ação */}
+        {!isRedeemed ? (
+          <TouchableOpacity
+            style={styles.redeemButton}
+            onPress={handleConfirmRedeem}
+            activeOpacity={0.85}
+          >
+            <Feather name="check-circle" size={18} color="#ffffff" />
+            <Text style={styles.redeemButtonText}>
+              Confirmar retirada no balcão
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.returnButton}
+            onPress={() => router.replace('/(app)/pedidos')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.returnButtonText}>Ver meus pedidos</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
