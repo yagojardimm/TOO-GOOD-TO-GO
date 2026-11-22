@@ -81,7 +81,14 @@ export default function ProfileScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Meu Perfil</Text>
-
+        <TouchableOpacity
+          style={styles.editHeaderBtn}
+          onPress={openEditModal}
+          activeOpacity={0.7}
+        >
+          <Feather name="edit-3" size={18} color="#059669" />
+          <Text style={styles.editHeaderBtnText}>Editar</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -163,7 +170,63 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-          </SafeAreaView>
+      {/* Modal de Edição de Perfil */}
+      <Modal
+        visible={editModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalCardHeader}>
+              <Text style={styles.modalCardTitle}>Editar Dados do Perfil</Text>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+                <Feather name="x" size={20} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.modalFieldLabel}>Nome Completo</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editName}
+              onChangeText={setEditName}
+              placeholder="Seu nome"
+              placeholderTextColor="#94a3b8"
+            />
+
+            <Text style={styles.modalFieldLabel}>Telefone / WhatsApp</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editPhone}
+              onChangeText={setEditPhone}
+              placeholder="(11) 99999-8888"
+              placeholderTextColor="#94a3b8"
+              keyboardType="phone-pad"
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalCancelBtn}
+                onPress={() => setEditModalVisible(false)}
+              >
+                <Text style={styles.modalCancelBtnText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.modalSaveBtn}
+                onPress={handleSaveProfile}
+                disabled={isSavingProfile}
+              >
+                <Text style={styles.modalSaveBtnText}>
+                  {isSavingProfile ? 'Salvando...' : 'Salvar'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
